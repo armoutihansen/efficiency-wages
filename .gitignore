@@ -1,0 +1,23 @@
+.DS_Store
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+test.ipynb
+
+# Generated intermediates that do not need to be versioned.
+outputs/logs/
+outputs/tables/*.dta
+
+# Local reference material that should not be published to GitHub.
+paper/
+archive/
+_analysis/
+_paper/
+
+# Local raw-export provenance and unused treatments. The public pipeline uses
+# the documented combined.csv inputs in data/raw/{ge_prosocial,neutral,efficiency}.
+data/raw/*/original_exports/
+data/raw/no_principal/
+data/raw/neutral_legacy/
