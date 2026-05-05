@@ -4,7 +4,7 @@ import json
 
 from src.analysis.tables_appendix import build as build_appendix_tables
 from src.replication_paths import LOGS, TABLES
-from src.stata import StataConfigurationError, run_do_file
+from src.stata import StataConfigurationError, StataExecutionError, run_do_file
 
 
 def run() -> dict[str, str]:
@@ -27,5 +27,5 @@ def run() -> dict[str, str]:
 if __name__ == "__main__":
     try:
         print(json.dumps(run(), indent=2))
-    except StataConfigurationError as error:
+    except (StataConfigurationError, StataExecutionError) as error:
         raise SystemExit(str(error)) from None

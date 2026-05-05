@@ -8,7 +8,8 @@ from src.analysis.run_stata_tables import run as run_stata_tables
 from src.analysis.tables_appendix import build as build_appendix_summary
 from src.data.assemble import build as build_data
 from src.environment import collect_setup
-from src.stata import StataConfigurationError
+from src.replication_paths import OUTPUTS
+from src.stata import StataConfigurationError, StataExecutionError
 from src.verification.checks import run_checks
 from src.verification.correspondence import build as build_correspondence
 from src.verification.report import build_report
@@ -43,7 +44,8 @@ def main() -> None:
             stata_tables_rerun=False,
         )
         print(json.dumps(setup, indent=2))
-        print(f"Setup report written to {report}")
+        print(f"Setup report (JSON) written to {OUTPUTS / 'setup_report.json'}.")
+        print(f"HTML replication report written to {report}.")
         return
 
     build_data()
@@ -53,7 +55,7 @@ def main() -> None:
     else:
         try:
             run_stata_tables()
-        except StataConfigurationError as error:
+        except (StataConfigurationError, StataExecutionError) as error:
             report = build_report(
                 setup=setup,
                 verification=None,
@@ -63,9 +65,11 @@ def main() -> None:
             raise SystemExit(f"{error}\nSetup report written to {report}.") from None
     build_correspondence()
 
+    stata_info = setup.get("stata")
     verification = run_checks(
         require_stata=not args.skip_stata,
         require_stata_tables=not args.skip_stata,
+        stata_info=stata_info if isinstance(stata_info, dict) else None,
     )
     report = build_report(
         setup=setup,

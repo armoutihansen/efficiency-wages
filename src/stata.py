@@ -18,6 +18,10 @@ class StataConfigurationError(RuntimeError):
     pass
 
 
+class StataExecutionError(RuntimeError):
+    pass
+
+
 @dataclass(frozen=True)
 class StataInfo:
     executable: str | None
@@ -87,8 +91,12 @@ def _find_executable() -> tuple[Path | None, str | None, str | None]:
     env_path = os.environ.get("STATA_PATH")
     if env_path:
         candidate = Path(env_path).expanduser()
-        if candidate.exists():
+        if candidate.is_file():
+            if platform.system() != "Windows" and not os.access(candidate, os.X_OK):
+                return None, "STATA_PATH", f"STATA_PATH points to a non-executable file: {candidate}"
             return candidate, "STATA_PATH", None
+        if candidate.exists():
+            return None, "STATA_PATH", f"STATA_PATH points to a directory, not an executable: {candidate}"
         return None, "STATA_PATH", f"STATA_PATH points to a missing file: {candidate}"
 
     for name in _candidate_names():
@@ -216,7 +224,7 @@ def run_do_file(do_file: str, stdout_name: str) -> StataInfo:
     )
     (LOGS / stdout_name).write_text(completed.stdout)
     if completed.returncode != 0:
-        raise SystemExit(
+        raise StataExecutionError(
             f"Stata table generation failed with exit code {completed.returncode}. "
             f"See {LOGS / stdout_name}."
         )

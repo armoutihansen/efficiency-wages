@@ -40,7 +40,11 @@ def _profit_max_wage(efforts: list[float], multiplier: int) -> int:
     return WAGES[int(np.nanargmax(profits))]
 
 
-def run_checks(require_stata: bool = True, require_stata_tables: bool = True) -> dict[str, object]:
+def run_checks(
+    require_stata: bool = True,
+    require_stata_tables: bool = True,
+    stata_info: dict[str, object] | None = None,
+) -> dict[str, object]:
     OUTPUTS.mkdir(parents=True, exist_ok=True)
     df = pd.read_csv(DATA_DERIVED / "analysis_sample.csv")
     agent_long = pd.read_csv(DATA_DERIVED / "agent_wage_long.csv")
@@ -230,19 +234,35 @@ def run_checks(require_stata: bool = True, require_stata_tables: bool = True) ->
             }
         )
 
-    stata = resolve_stata()
-    checks.append(
-        {
-            "check": "stata_cli_available",
-            "pass": stata.usable if require_stata else True,
-            "skipped": not require_stata,
-            "actual": stata.to_dict(),
-            "expected": "Stata 17 or newer",
-        }
-    )
+    stata_dict: dict[str, object] | None = None
+    if require_stata or stata_info is not None:
+        if stata_info is None:
+            stata = resolve_stata()
+            stata_dict = stata.to_dict()
+        else:
+            stata_dict = stata_info
+        checks.append(
+            {
+                "check": "stata_cli_available",
+                "pass": bool(stata_dict.get("usable")) if require_stata else True,
+                "skipped": not require_stata,
+                "actual": stata_dict,
+                "expected": "Stata 17 or newer",
+            }
+        )
+    else:
+        checks.append(
+            {
+                "check": "stata_cli_available",
+                "pass": True,
+                "skipped": True,
+                "actual": "skipped",
+                "expected": "Stata 17 or newer",
+            }
+        )
 
     passed = bool(all(bool(check["pass"]) for check in checks))
-    result = {"pass": passed, "checks": checks, "stata": stata.to_dict()}
+    result = {"pass": passed, "checks": checks, "stata": stata_dict}
     (OUTPUTS / "verification_report.json").write_text(json.dumps(result, indent=2) + "\n")
     return result
 
