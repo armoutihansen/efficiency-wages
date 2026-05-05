@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from replicate import main
+from run_analysis import main
 
 
 if __name__ == "__main__":

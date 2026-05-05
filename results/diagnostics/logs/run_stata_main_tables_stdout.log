@@ -1,0 +1,302 @@
+. do src/analysis/tables_main.do 
+
+. version 19
+
+. set more off
+
+. 
+. capture mkdir results
+
+. capture mkdir results/diagnostics
+
+. capture mkdir results/diagnostics/tables
+
+. capture mkdir results/diagnostics/logs
+
+. log using results/diagnostics/logs/stata_main_tables.log, replace text
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/jesper/Documents/Workspace/Github/efficiency-wages/results/
+> diagnostics/logs/stata_main_tables.log
+  log type:  text
+ opened on:   5 May 2026, 05:14:29
+
+. 
+. tempname results
+
+. postfile `results' str12 table_id str8 model str48 term double coefficient st
+> d_error fit_stat observations using results/diagnostics/tables/main_tables_re
+> sults.dta, replace
+
+. 
+. import delimited data/derived/agent_wage_long.csv, clear varnames(1)
+(encoding automatically selected: ISO-8859-1)
+(20 vars, 3,600 obs)
+
+. keep if treatment == "P" | treatment == "S"
+(1,890 observations deleted)
+
+. generate treatmentS = treatment == "S"
+
+. generate wage_below_5 = .
+(1,710 missing values generated)
+
+. replace wage_below_5 = 0 if wage > 3
+(1,520 real changes made)
+
+. replace wage_below_5 = 1 if wage < 5
+(190 real changes made)
+
+. xtset n
+
+Panel variable: n (balanced)
+
+. 
+. quietly xtreg acceptance c.wage_below_5, re cluster(n)
+
+. post `results' ("Table 2") ("1") ("Wage<5") (_b[wage_below_5]) (_se[wage_belo
+> w_5]) (e(r2_o)) (e(N))
+
+. post `results' ("Table 2") ("1") ("Constant") (_b[_cons]) (_se[_cons]) (e(r2_
+> o)) (e(N))
+
+. 
+. quietly xtreg acceptance c.wage_below_5##c.treatmentS, re cluster(n)
+
+. post `results' ("Table 2") ("2") ("Wage<5") (_b[wage_below_5]) (_se[wage_belo
+> w_5]) (e(r2_o)) (e(N))
+
+. post `results' ("Table 2") ("2") ("Prosocial treatment") (_b[treatmentS]) (_s
+> e[treatmentS]) (e(r2_o)) (e(N))
+
+. post `results' ("Table 2") ("2") ("Wage<5*Prosocial treatment") (_b[c.wage_be
+> low_5#c.treatmentS]) (_se[c.wage_below_5#c.treatmentS]) (e(r2_o)) (e(N))
+
+. post `results' ("Table 2") ("2") ("Constant") (_b[_cons]) (_se[_cons]) (e(r2_
+> o)) (e(N))
+
+. 
+. quietly xtreg acceptance c.wage_below_5##c.treatmentS i.gender i.study age, r
+> e cluster(n)
+
+. post `results' ("Table 2") ("3") ("Wage<5") (_b[wage_below_5]) (_se[wage_belo
+> w_5]) (e(r2_o)) (e(N))
+
+. post `results' ("Table 2") ("3") ("Prosocial treatment") (_b[treatmentS]) (_s
+> e[treatmentS]) (e(r2_o)) (e(N))
+
+. post `results' ("Table 2") ("3") ("Wage<5*Prosocial treatment") (_b[c.wage_be
+> low_5#c.treatmentS]) (_se[c.wage_below_5#c.treatmentS]) (e(r2_o)) (e(N))
+
+. post `results' ("Table 2") ("3") ("Constant") (_b[_cons]) (_se[_cons]) (e(r2_
+> o)) (e(N))
+
+. 
+. quietly xtlogit acceptance c.wage_below_5, re vce(cluster n)
+
+. post `results' ("Table 2") ("4") ("Wage<5") (_b[wage_below_5]) (_se[wage_belo
+> w_5]) (.) (e(N))
+
+. post `results' ("Table 2") ("4") ("Constant") (_b[_cons]) (_se[_cons]) (.) (e
+> (N))
+
+. 
+. quietly xtlogit acceptance c.wage_below_5##c.treatmentS, re vce(cluster n)
+
+. post `results' ("Table 2") ("5") ("Wage<5") (_b[wage_below_5]) (_se[wage_belo
+> w_5]) (.) (e(N))
+
+. post `results' ("Table 2") ("5") ("Prosocial treatment") (_b[treatmentS]) (_s
+> e[treatmentS]) (.) (e(N))
+
+. post `results' ("Table 2") ("5") ("Wage<5*Prosocial treatment") (_b[c.wage_be
+> low_5#c.treatmentS]) (_se[c.wage_below_5#c.treatmentS]) (.) (e(N))
+
+. post `results' ("Table 2") ("5") ("Constant") (_b[_cons]) (_se[_cons]) (.) (e
+> (N))
+
+. 
+. quietly xtlogit acceptance c.wage_below_5##c.treatmentS i.gender i.study age,
+>  re vce(cluster n)
+
+. post `results' ("Table 2") ("6") ("Wage<5") (_b[wage_below_5]) (_se[wage_belo
+> w_5]) (.) (e(N))
+
+. post `results' ("Table 2") ("6") ("Prosocial treatment") (_b[treatmentS]) (_s
+> e[treatmentS]) (.) (e(N))
+
+. post `results' ("Table 2") ("6") ("Wage<5*Prosocial treatment") (_b[c.wage_be
+> low_5#c.treatmentS]) (_se[c.wage_below_5#c.treatmentS]) (.) (e(N))
+
+. post `results' ("Table 2") ("6") ("Constant") (_b[_cons]) (_se[_cons]) (.) (e
+> (N))
+
+. 
+. quietly xtreg effort c.wage, re cluster(n)
+
+. post `results' ("Table 3") ("1") ("Wage") (_b[wage]) (_se[wage]) (e(r2_o)) (e
+> (N))
+
+. post `results' ("Table 3") ("1") ("Constant") (_b[_cons]) (_se[_cons]) (e(r2_
+> o)) (e(N))
+
+. 
+. quietly xtreg effort c.wage##c.treatmentS, re cluster(n)
+
+. post `results' ("Table 3") ("2") ("Wage") (_b[wage]) (_se[wage]) (e(r2_o)) (e
+> (N))
+
+. post `results' ("Table 3") ("2") ("Prosocial treatment") (_b[treatmentS]) (_s
+> e[treatmentS]) (e(r2_o)) (e(N))
+
+. post `results' ("Table 3") ("2") ("Wage*Prosocial treatment") (_b[c.wage#c.tr
+> eatmentS]) (_se[c.wage#c.treatmentS]) (e(r2_o)) (e(N))
+
+. post `results' ("Table 3") ("2") ("Constant") (_b[_cons]) (_se[_cons]) (e(r2_
+> o)) (e(N))
+
+. 
+. quietly xtreg effort c.wage##c.treatmentS i.gender i.study age, re cluster(n)
+
+. post `results' ("Table 3") ("3") ("Wage") (_b[wage]) (_se[wage]) (e(r2_o)) (e
+> (N))
+
+. post `results' ("Table 3") ("3") ("Prosocial treatment") (_b[treatmentS]) (_s
+> e[treatmentS]) (e(r2_o)) (e(N))
+
+. post `results' ("Table 3") ("3") ("Wage*Prosocial treatment") (_b[c.wage#c.tr
+> eatmentS]) (_se[c.wage#c.treatmentS]) (e(r2_o)) (e(N))
+
+. post `results' ("Table 3") ("3") ("Constant") (_b[_cons]) (_se[_cons]) (e(r2_
+> o)) (e(N))
+
+. 
+. quietly tobit effort c.wage, ul(10) ll(0) vce(cluster n)
+
+. post `results' ("Table 3") ("4") ("Wage") (_b[wage]) (_se[wage]) (e(r2_p)) (e
+> (N))
+
+. post `results' ("Table 3") ("4") ("Constant") (_b[_cons]) (_se[_cons]) (e(r2_
+> p)) (e(N))
+
+. 
+. quietly tobit effort c.wage##c.treatmentS, ul(10) ll(0) vce(cluster n)
+
+. post `results' ("Table 3") ("5") ("Wage") (_b[wage]) (_se[wage]) (e(r2_p)) (e
+> (N))
+
+. post `results' ("Table 3") ("5") ("Prosocial treatment") (_b[treatmentS]) (_s
+> e[treatmentS]) (e(r2_p)) (e(N))
+
+. post `results' ("Table 3") ("5") ("Wage*Prosocial treatment") (_b[c.wage#c.tr
+> eatmentS]) (_se[c.wage#c.treatmentS]) (e(r2_p)) (e(N))
+
+. post `results' ("Table 3") ("5") ("Constant") (_b[_cons]) (_se[_cons]) (e(r2_
+> p)) (e(N))
+
+. 
+. quietly tobit effort c.wage##c.treatmentS i.gender i.study age, ul(10) ll(0) 
+> vce(cluster n)
+
+. post `results' ("Table 3") ("6") ("Wage") (_b[wage]) (_se[wage]) (e(r2_p)) (e
+> (N))
+
+. post `results' ("Table 3") ("6") ("Prosocial treatment") (_b[treatmentS]) (_s
+> e[treatmentS]) (e(r2_p)) (e(N))
+
+. post `results' ("Table 3") ("6") ("Wage*Prosocial treatment") (_b[c.wage#c.tr
+> eatmentS]) (_se[c.wage#c.treatmentS]) (e(r2_p)) (e(N))
+
+. post `results' ("Table 3") ("6") ("Constant") (_b[_cons]) (_se[_cons]) (e(r2_
+> p)) (e(N))
+
+. 
+. import delimited data/derived/principals.csv, clear varnames(1)
+(encoding automatically selected: ISO-8859-1)
+(205 vars, 200 obs)
+
+. keep if treatment == "P" | treatment == "S"
+(105 observations deleted)
+
+. generate offered_wage = pa_offer_principal
+
+. generate treatmentS = treatment == "S"
+
+. generate tSchar = treatmentS * dictatorcharity
+
+. 
+. quietly regress offered_wage treatmentS, robust
+
+. post `results' ("Table 4") ("1") ("Prosocial treatment") (_b[treatmentS]) (_s
+> e[treatmentS]) (e(r2)) (e(N))
+
+. post `results' ("Table 4") ("1") ("Constant") (_b[_cons]) (_se[_cons]) (e(r2)
+> ) (e(N))
+
+. 
+. quietly regress offered_wage treatmentS dictatorcharity, robust
+
+. post `results' ("Table 4") ("2") ("Prosocial treatment") (_b[treatmentS]) (_s
+> e[treatmentS]) (e(r2)) (e(N))
+
+. post `results' ("Table 4") ("2") ("Charitable motivation") (_b[dictatorcharit
+> y]) (_se[dictatorcharity]) (e(r2)) (e(N))
+
+. post `results' ("Table 4") ("2") ("Constant") (_b[_cons]) (_se[_cons]) (e(r2)
+> ) (e(N))
+
+. 
+. quietly regress offered_wage treatmentS dictatorcharity tSchar, robust
+
+. post `results' ("Table 4") ("3") ("Prosocial treatment") (_b[treatmentS]) (_s
+> e[treatmentS]) (e(r2)) (e(N))
+
+. post `results' ("Table 4") ("3") ("Charitable motivation") (_b[dictatorcharit
+> y]) (_se[dictatorcharity]) (e(r2)) (e(N))
+
+. post `results' ("Table 4") ("3") ("Prosocial treatment*Charitable motivation"
+> ) (_b[tSchar]) (_se[tSchar]) (e(r2)) (e(N))
+
+. post `results' ("Table 4") ("3") ("Constant") (_b[_cons]) (_se[_cons]) (e(r2)
+> ) (e(N))
+
+. 
+. quietly regress offered_wage treatmentS dictatorcharity tSchar i.gender i.stu
+> dy age, robust
+
+. post `results' ("Table 4") ("4") ("Prosocial treatment") (_b[treatmentS]) (_s
+> e[treatmentS]) (e(r2)) (e(N))
+
+. post `results' ("Table 4") ("4") ("Charitable motivation") (_b[dictatorcharit
+> y]) (_se[dictatorcharity]) (e(r2)) (e(N))
+
+. post `results' ("Table 4") ("4") ("Prosocial treatment*Charitable motivation"
+> ) (_b[tSchar]) (_se[tSchar]) (e(r2)) (e(N))
+
+. post `results' ("Table 4") ("4") ("Constant") (_b[_cons]) (_se[_cons]) (e(r2)
+> ) (e(N))
+
+. 
+. postclose `results'
+
+. 
+. use results/diagnostics/tables/main_tables_results.dta, clear
+
+. export delimited using results/diagnostics/tables/main_tables_results.csv, re
+> place
+file results/diagnostics/tables/main_tables_results.csv saved
+
+. 
+. log close
+      name:  <unnamed>
+       log:  /Users/jesper/Documents/Workspace/Github/efficiency-wages/results/
+> diagnostics/logs/stata_main_tables.log
+  log type:  text
+ closed on:   5 May 2026, 05:14:31
+-------------------------------------------------------------------------------
+
+. 
+end of do-file
+
+
+. 

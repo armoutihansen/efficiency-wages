@@ -6,10 +6,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DATA_RAW = ROOT / "data" / "raw"
 DATA_DERIVED = ROOT / "data" / "derived"
-OUTPUTS = ROOT / "outputs"
-TABLES = OUTPUTS / "tables"
-FIGURES = OUTPUTS / "figures"
-LOGS = OUTPUTS / "logs"
+RESULTS = ROOT / "results"
+PAPER_TABLES = RESULTS / "paper" / "tables"
+PAPER_FIGURES = RESULTS / "paper" / "figures"
+APPENDIX_TABLES = RESULTS / "appendix" / "tables"
+APPENDIX_FIGURES = RESULTS / "appendix" / "figures"
+DIAGNOSTICS = RESULTS / "diagnostics"
+DIAGNOSTIC_TABLES = DIAGNOSTICS / "tables"
+LOGS = DIAGNOSTICS / "logs"
+
+# Backward-compatible aliases for internal modules that still produce diagnostic
+# machine-readable artifacts.
+OUTPUTS = DIAGNOSTICS
+TABLES = DIAGNOSTIC_TABLES
+FIGURES = DIAGNOSTICS / "figures"
 
 WAGES = [1, 3, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 75, 85, 95]
 

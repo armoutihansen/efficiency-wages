@@ -1,2 +1,1 @@
-"""Replication verification entrypoints."""
-
+"""Secondary analysis diagnostics."""

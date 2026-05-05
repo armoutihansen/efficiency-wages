@@ -5,22 +5,23 @@
 The primary entrypoint is:
 
 ```bash
-uv run python replicate.py
+uv run python run_analysis.py
 ```
 
 It runs these steps:
 
 1. Collect setup information for Python, dependencies, OS, and Stata.
 2. Assemble raw treatment CSV files into derived analysis datasets.
-3. Regenerate figures.
-4. Regenerate Stata regression tables.
-5. Write the paper-to-output correspondence checklist.
-6. Run verification checks.
-7. Write the HTML replication report.
+3. Regenerate paper and appendix figures.
+4. Regenerate Stata regression table data.
+5. Format table outputs as readable CSV files and LaTeX table fragments.
+6. Write secondary diagnostics.
+
+`replicate.py` and `main.py` are compatibility wrappers around `run_analysis.py`.
 
 ## Data Inputs
 
-The public replication pipeline uses:
+The public analysis pipeline uses:
 
 - `data/raw/ge_prosocial/combined.csv`
 - `data/raw/neutral/combined.csv`
@@ -40,10 +41,8 @@ Stata 17 or newer is required. The current local validation was performed with S
 
 ## Outputs
 
-The regression CSV files are long-form machine-readable outputs. Each row is one coefficient or constant from one published table/model. The HTML report pivots these into a more readable format.
+The main user-facing outputs are in `results/paper` and `results/appendix`.
 
-The figure script also writes `outputs/tables/wage_summary.csv`, which is the summary data used by the wage-comparison figures.
+Long-form machine-readable table files, Stata logs, setup information, and diagnostic checks are in `results/diagnostics`.
 
-## Verification Scope
-
-The checks cover sample sizes, headline paper results, full Table A.1 summary statistics, representative coefficients from appendix regression tables, generated figure files, and Stata availability. The figure checks verify artifact creation; visual parity remains a manual review step.
+The diagnostics checks cover sample sizes, headline values, generated artifact existence, and Stata availability. They are intended as a confidence check and troubleshooting aid, not as the main purpose of the repository.

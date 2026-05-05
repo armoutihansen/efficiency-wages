@@ -1,13 +1,21 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from src.replication_paths import DATA_DERIVED, FIGURES, TABLES, WAGES
+from src.replication_paths import (
+    APPENDIX_FIGURES,
+    DATA_DERIVED,
+    FIGURES,
+    PAPER_FIGURES,
+    TABLES,
+    WAGES,
+)
 
 
 PROFIT_MULTIPLIER = {"P": 10, "S": 10, "N": 10, "PAN": 35}
@@ -98,14 +106,16 @@ def _principal_wage_summary(
     return summary
 
 
-def _savefig(path: str) -> None:
+def _savefig(folder: Path, path: str) -> None:
     plt.tight_layout()
-    plt.savefig(FIGURES / path, dpi=300)
+    plt.savefig(folder / path, dpi=300)
     plt.close()
 
 
 def build() -> dict[str, str]:
     FIGURES.mkdir(parents=True, exist_ok=True)
+    PAPER_FIGURES.mkdir(parents=True, exist_ok=True)
+    APPENDIX_FIGURES.mkdir(parents=True, exist_ok=True)
     TABLES.mkdir(parents=True, exist_ok=True)
     sns.set_theme(style="ticks", context="paper", font_scale=1.25)
 
@@ -116,7 +126,7 @@ def build() -> dict[str, str]:
     main["Treatment"] = main["treatment_label"]
     sns.lineplot(data=main, x="Wage", y="Effort", hue="Treatment", marker="o", errorbar=("ci", 95))
     plt.ylabel("Mean chosen effort")
-    _savefig("main_fig_2_chosen_effort.png")
+    _savefig(PAPER_FIGURES, "main_fig_2_chosen_effort.png")
 
     main_wages = wage_summary[wage_summary["Treatment"].isin(["GE", "Prosocial"])]
     sns.barplot(
@@ -129,7 +139,7 @@ def build() -> dict[str, str]:
     )
     plt.ylabel("Wage")
     plt.xticks(rotation=0)
-    _savefig("main_fig_3_wage_comparisons.png")
+    _savefig(PAPER_FIGURES, "main_fig_3_wage_comparisons.png")
 
     chosen = agent_long[agent_long["Treatment"].isin(["P", "S"])][
         ["Treatment", "treatment_label", "Wage", "Effort"]
@@ -154,7 +164,7 @@ def build() -> dict[str, str]:
     )
     g.set_axis_labels("Wage", "Mean effort")
     g.set_titles("{col_name}")
-    g.savefig(FIGURES / "main_fig_4_chosen_expected_effort.png", dpi=300)
+    g.savefig(PAPER_FIGURES / "main_fig_4_chosen_expected_effort.png", dpi=300)
     plt.close("all")
 
     acceptance = agent_long[agent_long["Treatment"].isin(["P", "S"])].copy()
@@ -168,7 +178,7 @@ def build() -> dict[str, str]:
         errorbar=("ci", 95),
     )
     plt.ylabel("Acceptance share")
-    _savefig("supp_fig_a1_acceptance_wage.png")
+    _savefig(APPENDIX_FIGURES, "supp_fig_a1_acceptance_wage.png")
 
     all_effort = agent_long.copy()
     all_effort["Treatment"] = pd.Categorical(
@@ -183,7 +193,7 @@ def build() -> dict[str, str]:
         errorbar=("ci", 95),
     )
     plt.ylabel("Mean chosen effort")
-    _savefig("supp_fig_a2_chosen_effort_all.png")
+    _savefig(APPENDIX_FIGURES, "supp_fig_a2_chosen_effort_all.png")
 
     sns.barplot(
         data=wage_summary,
@@ -196,7 +206,7 @@ def build() -> dict[str, str]:
     )
     plt.ylabel("Wage")
     plt.xticks(rotation=15)
-    _savefig("supp_fig_a3_wage_comparisons_all.png")
+    _savefig(APPENDIX_FIGURES, "supp_fig_a3_wage_comparisons_all.png")
 
     median_expected = wage_summary[
         (wage_summary["Treatment"].isin(["GE", "Prosocial"]))
@@ -217,7 +227,7 @@ def build() -> dict[str, str]:
         edgecolor="black",
     )
     plt.ylabel("Wage")
-    _savefig("supp_fig_a4_beliefs_based_profitmax_wage.png")
+    _savefig(APPENDIX_FIGURES, "supp_fig_a4_beliefs_based_profitmax_wage.png")
 
     for treatment, filename in [
         ("P", "supp_fig_a5_individual_effort_ge.png"),
@@ -240,10 +250,13 @@ def build() -> dict[str, str]:
         )
         g.set(xticks=[1, 25, 50, 75, 95], yticks=[0, 5, 10], ylim=(-0.3, 10.3))
         g.set_axis_labels("Wage", "Effort")
-        g.savefig(FIGURES / filename, dpi=220)
+        g.savefig(APPENDIX_FIGURES / filename, dpi=220)
         plt.close("all")
 
-    artifacts = {path.name: str(path) for path in sorted(FIGURES.glob("*.png"))}
+    artifacts = {
+        path.name: str(path)
+        for path in [*sorted(PAPER_FIGURES.glob("*.png")), *sorted(APPENDIX_FIGURES.glob("*.png"))]
+    }
     (FIGURES / "manifest.json").write_text(json.dumps(artifacts, indent=2) + "\n")
     return artifacts
 

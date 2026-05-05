@@ -117,6 +117,12 @@ def _stata_command(executable: Path, command: str) -> list[str]:
     return [str(executable), "-q", command]
 
 
+def _stata_do_command(executable: Path, do_file: str) -> list[str]:
+    if platform.system() == "Windows":
+        return [str(executable), "/e", "do", do_file]
+    return [str(executable), "-q", "do", do_file]
+
+
 def _parse_version(text: str) -> str | None:
     for line in text.splitlines():
         match = re.search(r"\b([0-9]+(?:\.[0-9]+)?)\b", line.strip())
@@ -213,9 +219,8 @@ def run_do_file(do_file: str, stdout_name: str) -> StataInfo:
     assert info.executable is not None
     LOGS.mkdir(parents=True, exist_ok=True)
     executable = Path(info.executable)
-    command = f'do "{do_file}"'
     completed = subprocess.run(
-        _stata_command(executable, command),
+        _stata_do_command(executable, do_file),
         cwd=ROOT,
         text=True,
         stdout=subprocess.PIPE,

@@ -1,0 +1,7 @@
+Term,Neutral real,Efficiency real,Neutral expected,Efficiency expected
+Wage,0.080***,0.069***,0.080***,0.059***
+,(0.007),(0.005),(0.007),(0.006)
+Constant,0.697**,-0.094,0.051,0.059
+,(0.313),(0.238),(0.139),(0.147)
+Observations,810,1080,810,1080
+R-squared / pseudo R-squared,0.390,0.411,0.456,0.379
