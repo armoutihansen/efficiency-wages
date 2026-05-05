@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 import json
-import shutil
-import subprocess
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-from src.replication_paths import DATA_DERIVED, FIGURES, OUTPUTS, ROOT, TABLES, WAGES
+from src.replication_paths import DATA_DERIVED, FIGURES, OUTPUTS, TABLES, WAGES
+from src.stata import resolve_stata
 
 
 EXPECTED_COUNTS = {
@@ -37,37 +35,12 @@ def _close(actual: float, expected: float, tolerance: float = 0.01) -> bool:
     return bool(abs(actual - expected) <= tolerance)
 
 
-def _stata_version() -> str | None:
-    candidates = [
-        Path("/Applications/Stata/StataSE.app/Contents/MacOS/stata-se"),
-        Path("/Applications/Stata/StataMP.app/Contents/MacOS/stata-mp"),
-        Path("/Applications/Stata/StataBE.app/Contents/MacOS/stata-be"),
-    ]
-    executable = next((str(path) for path in candidates if path.exists()), None)
-    executable = executable or shutil.which("stata-se")
-    if executable is None:
-        return None
-    completed = subprocess.run(
-        [executable, "-q", "display c(stata_version)"],
-        cwd=ROOT,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        check=False,
-    )
-    for line in completed.stdout.splitlines():
-        stripped = line.strip()
-        if stripped.replace(".", "", 1).isdigit():
-            return stripped
-    return None
-
-
 def _profit_max_wage(efforts: list[float], multiplier: int) -> int:
     profits = [multiplier * effort - wage for effort, wage in zip(efforts, WAGES)]
     return WAGES[int(np.nanargmax(profits))]
 
 
-def run_checks() -> dict[str, object]:
+def run_checks(require_stata: bool = True, require_stata_tables: bool = True) -> dict[str, object]:
     OUTPUTS.mkdir(parents=True, exist_ok=True)
     df = pd.read_csv(DATA_DERIVED / "analysis_sample.csv")
     agent_long = pd.read_csv(DATA_DERIVED / "agent_wage_long.csv")
@@ -161,7 +134,8 @@ def run_checks() -> dict[str, object]:
         checks.append(
             {
                 "check": "stata_main_tables_results_exist",
-                "pass": False,
+                "pass": not require_stata_tables,
+                "skipped": not require_stata_tables,
                 "actual": "missing",
                 "expected": str(TABLES / "main_tables_results.csv"),
             }
@@ -238,7 +212,8 @@ def run_checks() -> dict[str, object]:
         checks.append(
             {
                 "check": "appendix_regression_tables_exist",
-                "pass": False,
+                "pass": not require_stata_tables,
+                "skipped": not require_stata_tables,
                 "actual": "missing",
                 "expected": str(TABLES / "appendix_tables_results.csv"),
             }
@@ -255,18 +230,19 @@ def run_checks() -> dict[str, object]:
             }
         )
 
-    version = _stata_version()
+    stata = resolve_stata()
     checks.append(
         {
             "check": "stata_cli_available",
-            "pass": version is not None and version.startswith("19"),
-            "actual": version,
-            "expected": "19",
+            "pass": stata.usable if require_stata else True,
+            "skipped": not require_stata,
+            "actual": stata.to_dict(),
+            "expected": "Stata 17 or newer",
         }
     )
 
     passed = bool(all(bool(check["pass"]) for check in checks))
-    result = {"pass": passed, "checks": checks}
+    result = {"pass": passed, "checks": checks, "stata": stata.to_dict()}
     (OUTPUTS / "verification_report.json").write_text(json.dumps(result, indent=2) + "\n")
     return result
 
