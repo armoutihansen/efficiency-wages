@@ -192,7 +192,7 @@
     {
       "check": "artifact_main_fig_2_chosen_effort.png",
       "pass": true,
-      "actual": 197030,
+      "actual": 196109,
       "expected": ">0 bytes"
     },
     {
@@ -204,19 +204,19 @@
     {
       "check": "artifact_main_fig_4_chosen_expected_effort.png",
       "pass": true,
-      "actual": 281019,
+      "actual": 281365,
       "expected": ">0 bytes"
     },
     {
       "check": "artifact_supp_fig_a1_acceptance_wage.png",
       "pass": true,
-      "actual": 179855,
+      "actual": 177967,
       "expected": ">0 bytes"
     },
     {
       "check": "artifact_supp_fig_a2_chosen_effort_all.png",
       "pass": true,
-      "actual": 325529,
+      "actual": 328323,
       "expected": ">0 bytes"
     },
     {

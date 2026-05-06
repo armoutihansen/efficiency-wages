@@ -5,7 +5,7 @@ import json
 import numpy as np
 import pandas as pd
 
-from src.replication_paths import DATA_DERIVED, FIGURES, OUTPUTS, TABLES, WAGES
+from src.replication_paths import APPENDIX_FIGURES, DATA_DERIVED, OUTPUTS, PAPER_FIGURES, TABLES, WAGES
 from src.stata import resolve_stata
 
 
@@ -17,17 +17,17 @@ EXPECTED_COUNTS = {
 }
 
 EXPECTED_FIGURES = [
-    "main_fig_2_chosen_effort.png",
-    "main_fig_3_wage_comparisons.png",
-    "main_fig_4_chosen_expected_effort.png",
-    "supp_fig_a1_acceptance_wage.png",
-    "supp_fig_a2_chosen_effort_all.png",
-    "supp_fig_a3_wage_comparisons_all.png",
-    "supp_fig_a4_beliefs_based_profitmax_wage.png",
-    "supp_fig_a5_individual_effort_ge.png",
-    "supp_fig_a6_individual_effort_prosocial.png",
-    "supp_fig_a7_individual_effort_neutral.png",
-    "supp_fig_a8_individual_effort_efficiency.png",
+    (PAPER_FIGURES, "main_fig_2_chosen_effort.png"),
+    (PAPER_FIGURES, "main_fig_3_wage_comparisons.png"),
+    (PAPER_FIGURES, "main_fig_4_chosen_expected_effort.png"),
+    (APPENDIX_FIGURES, "supp_fig_a1_acceptance_wage.png"),
+    (APPENDIX_FIGURES, "supp_fig_a2_chosen_effort_all.png"),
+    (APPENDIX_FIGURES, "supp_fig_a3_wage_comparisons_all.png"),
+    (APPENDIX_FIGURES, "supp_fig_a4_beliefs_based_profitmax_wage.png"),
+    (APPENDIX_FIGURES, "supp_fig_a5_individual_effort_ge.png"),
+    (APPENDIX_FIGURES, "supp_fig_a6_individual_effort_prosocial.png"),
+    (APPENDIX_FIGURES, "supp_fig_a7_individual_effort_neutral.png"),
+    (APPENDIX_FIGURES, "supp_fig_a8_individual_effort_efficiency.png"),
 ]
 
 
@@ -223,8 +223,8 @@ def run_checks(
             }
         )
 
-    for figure in EXPECTED_FIGURES:
-        path = FIGURES / figure
+    for folder, figure in EXPECTED_FIGURES:
+        path = folder / figure
         checks.append(
             {
                 "check": f"artifact_{figure}",

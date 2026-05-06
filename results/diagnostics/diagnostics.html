@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Efficiency Wages Replication Report</title>
+  <title>Efficiency Wages Analysis Diagnostics</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 2rem; color: #222; }
     h1, h2, h3, h4 { line-height: 1.25; }
@@ -24,11 +24,11 @@
   </style>
 </head>
 <body>
-  <h1>Efficiency Wages with Motivated Agents: Replication Report</h1>
+  <h1>Efficiency Wages with Motivated Agents: Analysis Diagnostics</h1>
   <p class="notice">Run mode: <strong>full</strong>. Overall status: <strong>Passed</strong>. Stata tables rerun in this report: <strong>True</strong>.</p>
 
   <h2>Setup</h2>
-  <table><tr><th>timestamp_utc</th><td><pre>2026-05-05T02:26:01+00:00</pre></td></tr>
+  <table><tr><th>timestamp_utc</th><td><pre>2026-05-05T03:14:10+00:00</pre></td></tr>
 <tr><th>os</th><td><pre>{
   &quot;system&quot;: &quot;Darwin&quot;,
   &quot;release&quot;: &quot;25.4.0&quot;,
@@ -55,7 +55,7 @@
   &quot;message&quot;: &quot;Found Stata 19 at /Applications/Stata/StataSE.app/Contents/MacOS/stata-se.&quot;
 }</pre></td></tr></table>
 
-  <h2>Verification Checks</h2>
+  <h2>Diagnostic Checks</h2>
   <table><tr><th>Status</th><th>Check</th><th>Actual</th><th>Expected</th></tr>
 <tr><td><span class="badge pass">Pass</span></td><td>sample_count_P</td><td><pre>{
   &quot;observations&quot;: 94,
@@ -130,11 +130,11 @@
 <tr><td><span class="badge pass">Pass</span></td><td>appendix_table_a7_model2_efficiency</td><td><pre>-1.084780397650773</pre></td><td><pre>-1.08512</pre></td></tr>
 <tr><td><span class="badge pass">Pass</span></td><td>appendix_table_a8_model1_ge</td><td><pre>-10.19636524822694</pre></td><td><pre>-10.19637</pre></td></tr>
 <tr><td><span class="badge pass">Pass</span></td><td>appendix_table_a9_model1_efficiency</td><td><pre>10.91250000000001</pre></td><td><pre>10.91277</pre></td></tr>
-<tr><td><span class="badge pass">Pass</span></td><td>artifact_main_fig_2_chosen_effort.png</td><td><pre>197030</pre></td><td><pre>&gt;0 bytes</pre></td></tr>
+<tr><td><span class="badge pass">Pass</span></td><td>artifact_main_fig_2_chosen_effort.png</td><td><pre>196109</pre></td><td><pre>&gt;0 bytes</pre></td></tr>
 <tr><td><span class="badge pass">Pass</span></td><td>artifact_main_fig_3_wage_comparisons.png</td><td><pre>85521</pre></td><td><pre>&gt;0 bytes</pre></td></tr>
-<tr><td><span class="badge pass">Pass</span></td><td>artifact_main_fig_4_chosen_expected_effort.png</td><td><pre>281019</pre></td><td><pre>&gt;0 bytes</pre></td></tr>
-<tr><td><span class="badge pass">Pass</span></td><td>artifact_supp_fig_a1_acceptance_wage.png</td><td><pre>179855</pre></td><td><pre>&gt;0 bytes</pre></td></tr>
-<tr><td><span class="badge pass">Pass</span></td><td>artifact_supp_fig_a2_chosen_effort_all.png</td><td><pre>325529</pre></td><td><pre>&gt;0 bytes</pre></td></tr>
+<tr><td><span class="badge pass">Pass</span></td><td>artifact_main_fig_4_chosen_expected_effort.png</td><td><pre>281365</pre></td><td><pre>&gt;0 bytes</pre></td></tr>
+<tr><td><span class="badge pass">Pass</span></td><td>artifact_supp_fig_a1_acceptance_wage.png</td><td><pre>177967</pre></td><td><pre>&gt;0 bytes</pre></td></tr>
+<tr><td><span class="badge pass">Pass</span></td><td>artifact_supp_fig_a2_chosen_effort_all.png</td><td><pre>328323</pre></td><td><pre>&gt;0 bytes</pre></td></tr>
 <tr><td><span class="badge pass">Pass</span></td><td>artifact_supp_fig_a3_wage_comparisons_all.png</td><td><pre>105186</pre></td><td><pre>&gt;0 bytes</pre></td></tr>
 <tr><td><span class="badge pass">Pass</span></td><td>artifact_supp_fig_a4_beliefs_based_profitmax_wage.png</td><td><pre>67955</pre></td><td><pre>&gt;0 bytes</pre></td></tr>
 <tr><td><span class="badge pass">Pass</span></td><td>artifact_supp_fig_a5_individual_effort_ge.png</td><td><pre>270095</pre></td><td><pre>&gt;0 bytes</pre></td></tr>
@@ -151,25 +151,25 @@
   &quot;message&quot;: &quot;Found Stata 19 at /Applications/Stata/StataSE.app/Contents/MacOS/stata-se.&quot;
 }</pre></td><td><pre>Stata 17 or newer</pre></td></tr></table>
 
-  <h2>Published Artifact Correspondence</h2>
+  <h2>Analysis Artifact Map</h2>
   <table><tr><th>Paper artifact</th><th>Script</th><th>Generated output</th><th>Status</th></tr>
-<tr><td>Main Table 2</td><td><code>src/analysis/tables_main.do</code></td><td><code>outputs/tables/main_tables_results.csv</code></td><td>matched against published notebook output</td></tr>
-<tr><td>Main Table 3</td><td><code>src/analysis/tables_main.do</code></td><td><code>outputs/tables/main_tables_results.csv</code></td><td>matched against published notebook output</td></tr>
-<tr><td>Main Table 4</td><td><code>src/analysis/tables_main.do</code></td><td><code>outputs/tables/main_tables_results.csv</code></td><td>numeric check implemented</td></tr>
-<tr><td>Main Figure 2</td><td><code>src/analysis/figures.py</code></td><td><code>outputs/figures/main_fig_2_chosen_effort.png</code></td><td>regenerated; visual parity check pending</td></tr>
-<tr><td>Main Figure 3</td><td><code>src/analysis/figures.py</code></td><td><code>outputs/figures/main_fig_3_wage_comparisons.png</code></td><td>regenerated; visual parity check pending</td></tr>
-<tr><td>Main Figure 4</td><td><code>src/analysis/figures.py</code></td><td><code>outputs/figures/main_fig_4_chosen_expected_effort.png</code></td><td>regenerated; visual parity check pending</td></tr>
-<tr><td>Supplement Table A.1</td><td><code>src/analysis/tables_appendix.py</code></td><td><code>outputs/tables/appendix_table_a1_summary_statistics.csv</code></td><td>numeric checks implemented</td></tr>
-<tr><td>Supplement Tables A.2-A.3</td><td><code>src/analysis/tables_appendix.do</code></td><td><code>outputs/tables/appendix_tables_results.csv</code></td><td>numeric checks implemented for representative published coefficients</td></tr>
-<tr><td>Supplement Tables A.4-A.9</td><td><code>src/analysis/tables_appendix.do</code></td><td><code>outputs/tables/appendix_tables_results.csv</code></td><td>numeric checks implemented for representative published coefficients</td></tr>
-<tr><td>Supplement Figure A.1</td><td><code>src/analysis/figures.py</code></td><td><code>outputs/figures/supp_fig_a1_acceptance_wage.png</code></td><td>regenerated; visual parity check pending</td></tr>
-<tr><td>Supplement Figure A.2</td><td><code>src/analysis/figures.py</code></td><td><code>outputs/figures/supp_fig_a2_chosen_effort_all.png</code></td><td>regenerated; visual parity check pending</td></tr>
-<tr><td>Supplement Figure A.3</td><td><code>src/analysis/figures.py</code></td><td><code>outputs/figures/supp_fig_a3_wage_comparisons_all.png</code></td><td>regenerated; visual parity check pending</td></tr>
-<tr><td>Supplement Figure A.4</td><td><code>src/analysis/figures.py</code></td><td><code>outputs/figures/supp_fig_a4_beliefs_based_profitmax_wage.png</code></td><td>regenerated; visual parity check pending</td></tr>
-<tr><td>Supplement Figure A.5</td><td><code>src/analysis/figures.py</code></td><td><code>outputs/figures/supp_fig_a5_individual_effort_ge.png</code></td><td>regenerated; visual parity check pending</td></tr>
-<tr><td>Supplement Figure A.6</td><td><code>src/analysis/figures.py</code></td><td><code>outputs/figures/supp_fig_a6_individual_effort_prosocial.png</code></td><td>regenerated; visual parity check pending</td></tr>
-<tr><td>Supplement Figure A.7</td><td><code>src/analysis/figures.py</code></td><td><code>outputs/figures/supp_fig_a7_individual_effort_neutral.png</code></td><td>regenerated; visual parity check pending</td></tr>
-<tr><td>Supplement Figure A.8</td><td><code>src/analysis/figures.py</code></td><td><code>outputs/figures/supp_fig_a8_individual_effort_efficiency.png</code></td><td>regenerated; visual parity check pending</td></tr></table>
+<tr><td>Main Table 2</td><td><code>src/analysis/tables_main.do</code></td><td><code>results/paper/tables/table_2_acceptance.tex</code></td><td>generated</td></tr>
+<tr><td>Main Table 3</td><td><code>src/analysis/tables_main.do</code></td><td><code>results/paper/tables/table_3_effort.tex</code></td><td>generated</td></tr>
+<tr><td>Main Table 4</td><td><code>src/analysis/tables_main.do</code></td><td><code>results/paper/tables/table_4_wage_offers.tex</code></td><td>generated</td></tr>
+<tr><td>Main Figure 2</td><td><code>src/analysis/figures.py</code></td><td><code>results/paper/figures/main_fig_2_chosen_effort.png</code></td><td>generated</td></tr>
+<tr><td>Main Figure 3</td><td><code>src/analysis/figures.py</code></td><td><code>results/paper/figures/main_fig_3_wage_comparisons.png</code></td><td>generated</td></tr>
+<tr><td>Main Figure 4</td><td><code>src/analysis/figures.py</code></td><td><code>results/paper/figures/main_fig_4_chosen_expected_effort.png</code></td><td>generated</td></tr>
+<tr><td>Supplement Table A.1</td><td><code>src/analysis/tables_appendix.py</code></td><td><code>results/appendix/tables/table_a1_summary_statistics.tex</code></td><td>generated</td></tr>
+<tr><td>Supplement Tables A.2-A.3</td><td><code>src/analysis/tables_appendix.do</code></td><td><code>results/appendix/tables/</code></td><td>generated</td></tr>
+<tr><td>Supplement Tables A.4-A.9</td><td><code>src/analysis/tables_appendix.do</code></td><td><code>results/appendix/tables/</code></td><td>generated</td></tr>
+<tr><td>Supplement Figure A.1</td><td><code>src/analysis/figures.py</code></td><td><code>results/appendix/figures/supp_fig_a1_acceptance_wage.png</code></td><td>generated</td></tr>
+<tr><td>Supplement Figure A.2</td><td><code>src/analysis/figures.py</code></td><td><code>results/appendix/figures/supp_fig_a2_chosen_effort_all.png</code></td><td>generated</td></tr>
+<tr><td>Supplement Figure A.3</td><td><code>src/analysis/figures.py</code></td><td><code>results/appendix/figures/supp_fig_a3_wage_comparisons_all.png</code></td><td>generated</td></tr>
+<tr><td>Supplement Figure A.4</td><td><code>src/analysis/figures.py</code></td><td><code>results/appendix/figures/supp_fig_a4_beliefs_based_profitmax_wage.png</code></td><td>generated</td></tr>
+<tr><td>Supplement Figure A.5</td><td><code>src/analysis/figures.py</code></td><td><code>results/appendix/figures/supp_fig_a5_individual_effort_ge.png</code></td><td>generated</td></tr>
+<tr><td>Supplement Figure A.6</td><td><code>src/analysis/figures.py</code></td><td><code>results/appendix/figures/supp_fig_a6_individual_effort_prosocial.png</code></td><td>generated</td></tr>
+<tr><td>Supplement Figure A.7</td><td><code>src/analysis/figures.py</code></td><td><code>results/appendix/figures/supp_fig_a7_individual_effort_neutral.png</code></td><td>generated</td></tr>
+<tr><td>Supplement Figure A.8</td><td><code>src/analysis/figures.py</code></td><td><code>results/appendix/figures/supp_fig_a8_individual_effort_efficiency.png</code></td><td>generated</td></tr></table>
 
   <h2>Generated Tables</h2>
   <h3>Supplement Table A.1: Summary Statistics</h3><table border="1" class="dataframe dataframe">
@@ -921,16 +921,16 @@
 </table>
 
   <h2>Generated Figures</h2>
-  <div class="gallery"><figure><a href="figures/main_fig_2_chosen_effort.png"><img src="figures/main_fig_2_chosen_effort.png" alt="main_fig_2_chosen_effort.png"></a><figcaption>main_fig_2_chosen_effort.png</figcaption></figure>
-<figure><a href="figures/main_fig_3_wage_comparisons.png"><img src="figures/main_fig_3_wage_comparisons.png" alt="main_fig_3_wage_comparisons.png"></a><figcaption>main_fig_3_wage_comparisons.png</figcaption></figure>
-<figure><a href="figures/main_fig_4_chosen_expected_effort.png"><img src="figures/main_fig_4_chosen_expected_effort.png" alt="main_fig_4_chosen_expected_effort.png"></a><figcaption>main_fig_4_chosen_expected_effort.png</figcaption></figure>
-<figure><a href="figures/supp_fig_a1_acceptance_wage.png"><img src="figures/supp_fig_a1_acceptance_wage.png" alt="supp_fig_a1_acceptance_wage.png"></a><figcaption>supp_fig_a1_acceptance_wage.png</figcaption></figure>
-<figure><a href="figures/supp_fig_a2_chosen_effort_all.png"><img src="figures/supp_fig_a2_chosen_effort_all.png" alt="supp_fig_a2_chosen_effort_all.png"></a><figcaption>supp_fig_a2_chosen_effort_all.png</figcaption></figure>
-<figure><a href="figures/supp_fig_a3_wage_comparisons_all.png"><img src="figures/supp_fig_a3_wage_comparisons_all.png" alt="supp_fig_a3_wage_comparisons_all.png"></a><figcaption>supp_fig_a3_wage_comparisons_all.png</figcaption></figure>
-<figure><a href="figures/supp_fig_a4_beliefs_based_profitmax_wage.png"><img src="figures/supp_fig_a4_beliefs_based_profitmax_wage.png" alt="supp_fig_a4_beliefs_based_profitmax_wage.png"></a><figcaption>supp_fig_a4_beliefs_based_profitmax_wage.png</figcaption></figure>
-<figure><a href="figures/supp_fig_a5_individual_effort_ge.png"><img src="figures/supp_fig_a5_individual_effort_ge.png" alt="supp_fig_a5_individual_effort_ge.png"></a><figcaption>supp_fig_a5_individual_effort_ge.png</figcaption></figure>
-<figure><a href="figures/supp_fig_a6_individual_effort_prosocial.png"><img src="figures/supp_fig_a6_individual_effort_prosocial.png" alt="supp_fig_a6_individual_effort_prosocial.png"></a><figcaption>supp_fig_a6_individual_effort_prosocial.png</figcaption></figure>
-<figure><a href="figures/supp_fig_a7_individual_effort_neutral.png"><img src="figures/supp_fig_a7_individual_effort_neutral.png" alt="supp_fig_a7_individual_effort_neutral.png"></a><figcaption>supp_fig_a7_individual_effort_neutral.png</figcaption></figure>
-<figure><a href="figures/supp_fig_a8_individual_effort_efficiency.png"><img src="figures/supp_fig_a8_individual_effort_efficiency.png" alt="supp_fig_a8_individual_effort_efficiency.png"></a><figcaption>supp_fig_a8_individual_effort_efficiency.png</figcaption></figure></div>
+  <div class="gallery"><figure><a href="paper/figures/main_fig_2_chosen_effort.png"><img src="paper/figures/main_fig_2_chosen_effort.png" alt="main_fig_2_chosen_effort.png"></a><figcaption>main_fig_2_chosen_effort.png</figcaption></figure>
+<figure><a href="paper/figures/main_fig_3_wage_comparisons.png"><img src="paper/figures/main_fig_3_wage_comparisons.png" alt="main_fig_3_wage_comparisons.png"></a><figcaption>main_fig_3_wage_comparisons.png</figcaption></figure>
+<figure><a href="paper/figures/main_fig_4_chosen_expected_effort.png"><img src="paper/figures/main_fig_4_chosen_expected_effort.png" alt="main_fig_4_chosen_expected_effort.png"></a><figcaption>main_fig_4_chosen_expected_effort.png</figcaption></figure>
+<figure><a href="appendix/figures/supp_fig_a1_acceptance_wage.png"><img src="appendix/figures/supp_fig_a1_acceptance_wage.png" alt="supp_fig_a1_acceptance_wage.png"></a><figcaption>supp_fig_a1_acceptance_wage.png</figcaption></figure>
+<figure><a href="appendix/figures/supp_fig_a2_chosen_effort_all.png"><img src="appendix/figures/supp_fig_a2_chosen_effort_all.png" alt="supp_fig_a2_chosen_effort_all.png"></a><figcaption>supp_fig_a2_chosen_effort_all.png</figcaption></figure>
+<figure><a href="appendix/figures/supp_fig_a3_wage_comparisons_all.png"><img src="appendix/figures/supp_fig_a3_wage_comparisons_all.png" alt="supp_fig_a3_wage_comparisons_all.png"></a><figcaption>supp_fig_a3_wage_comparisons_all.png</figcaption></figure>
+<figure><a href="appendix/figures/supp_fig_a4_beliefs_based_profitmax_wage.png"><img src="appendix/figures/supp_fig_a4_beliefs_based_profitmax_wage.png" alt="supp_fig_a4_beliefs_based_profitmax_wage.png"></a><figcaption>supp_fig_a4_beliefs_based_profitmax_wage.png</figcaption></figure>
+<figure><a href="appendix/figures/supp_fig_a5_individual_effort_ge.png"><img src="appendix/figures/supp_fig_a5_individual_effort_ge.png" alt="supp_fig_a5_individual_effort_ge.png"></a><figcaption>supp_fig_a5_individual_effort_ge.png</figcaption></figure>
+<figure><a href="appendix/figures/supp_fig_a6_individual_effort_prosocial.png"><img src="appendix/figures/supp_fig_a6_individual_effort_prosocial.png" alt="supp_fig_a6_individual_effort_prosocial.png"></a><figcaption>supp_fig_a6_individual_effort_prosocial.png</figcaption></figure>
+<figure><a href="appendix/figures/supp_fig_a7_individual_effort_neutral.png"><img src="appendix/figures/supp_fig_a7_individual_effort_neutral.png" alt="supp_fig_a7_individual_effort_neutral.png"></a><figcaption>supp_fig_a7_individual_effort_neutral.png</figcaption></figure>
+<figure><a href="appendix/figures/supp_fig_a8_individual_effort_efficiency.png"><img src="appendix/figures/supp_fig_a8_individual_effort_efficiency.png" alt="supp_fig_a8_individual_effort_efficiency.png"></a><figcaption>supp_fig_a8_individual_effort_efficiency.png</figcaption></figure></div>
 </body>
 </html>

@@ -7,14 +7,14 @@ __pycache__/
 test.ipynb
 
 # Generated intermediates that do not need to be versioned.
-outputs/logs/
-outputs/tables/*.dta
+results/diagnostics/tables/*.dta
+outputs/
 
 # Local reference material that should not be published to GitHub.
-paper/
-archive/
-_analysis/
-_paper/
+/paper/
+/archive/
+/_analysis/
+/_paper/
 
 # Local raw-export provenance and unused treatments. The public pipeline uses
 # the documented combined.csv inputs in data/raw/{ge_prosocial,neutral,efficiency}.

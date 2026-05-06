@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import html
 import json
+import os
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 
-from src.replication_paths import FIGURES, OUTPUTS, TABLES
+from src.replication_paths import APPENDIX_FIGURES, OUTPUTS, PAPER_FIGURES, TABLES
 from src.verification.correspondence import ARTIFACTS
 
 
@@ -108,11 +109,12 @@ def _artifact_table() -> str:
 
 
 def _figure_gallery() -> str:
-    if not FIGURES.exists():
+    paths = [*sorted(PAPER_FIGURES.glob("*.png")), *sorted(APPENDIX_FIGURES.glob("*.png"))]
+    if not paths:
         return "<p>No figures generated.</p>"
     items = []
-    for path in sorted(FIGURES.glob("*.png")):
-        rel = path.relative_to(OUTPUTS).as_posix()
+    for path in paths:
+        rel = Path(os.path.relpath(str(path), str(OUTPUTS))).as_posix()
         items.append(
             "<figure>"
             f'<a href="{_escape(rel)}"><img src="{_escape(rel)}" alt="{_escape(path.name)}"></a>'
@@ -131,14 +133,14 @@ def build_report(
     OUTPUTS.mkdir(parents=True, exist_ok=True)
     pass_status = verification.get("pass") if verification else None
     status_text = "Passed" if pass_status else "Failed" if pass_status is False else "Setup only"
-    checks_html = _checks_table(verification.get("checks", [])) if verification else "<p>No verification checks were run.</p>"
+    checks_html = _checks_table(verification.get("checks", [])) if verification else "<p>No diagnostic checks were run.</p>"
 
     body = f"""
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Efficiency Wages Replication Report</title>
+  <title>Efficiency Wages Analysis Diagnostics</title>
   <style>
     body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 2rem; color: #222; }}
     h1, h2, h3, h4 {{ line-height: 1.25; }}
@@ -159,16 +161,16 @@ def build_report(
   </style>
 </head>
 <body>
-  <h1>Efficiency Wages with Motivated Agents: Replication Report</h1>
+  <h1>Efficiency Wages with Motivated Agents: Analysis Diagnostics</h1>
   <p class="notice">Run mode: <strong>{_escape(mode)}</strong>. Overall status: <strong>{_escape(status_text)}</strong>. Stata tables rerun in this report: <strong>{_escape(stata_tables_rerun)}</strong>.</p>
 
   <h2>Setup</h2>
   {_dict_table(setup)}
 
-  <h2>Verification Checks</h2>
+  <h2>Diagnostic Checks</h2>
   {checks_html}
 
-  <h2>Published Artifact Correspondence</h2>
+  <h2>Analysis Artifact Map</h2>
   {_artifact_table()}
 
   <h2>Generated Tables</h2>
@@ -181,6 +183,6 @@ def build_report(
 </body>
 </html>
 """
-    output = OUTPUTS / "replication_report.html"
+    output = OUTPUTS / "diagnostics.html"
     output.write_text(body)
     return str(output)
