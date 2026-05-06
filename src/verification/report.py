@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import html
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -113,7 +114,7 @@ def _figure_gallery() -> str:
         return "<p>No figures generated.</p>"
     items = []
     for path in paths:
-        rel = path.relative_to(OUTPUTS.parent).as_posix()
+        rel = Path(os.path.relpath(path, OUTPUTS)).as_posix()
         items.append(
             "<figure>"
             f'<a href="{_escape(rel)}"><img src="{_escape(rel)}" alt="{_escape(path.name)}"></a>'
