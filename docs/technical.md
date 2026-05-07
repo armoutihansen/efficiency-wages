@@ -47,7 +47,7 @@ The public analysis pipeline uses:
 - `data/raw/neutral/combined.csv`
 - `data/raw/efficiency/combined.csv`
 
-The derived datasets in `data/derived/` are generated from these inputs.
+The derived datasets in `data/derived/` are generated from these inputs at runtime. They are ignored by git because they can be rebuilt.
 
 ## Stata
 

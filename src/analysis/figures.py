@@ -11,15 +11,14 @@ import seaborn as sns
 from src.paths import (
     APPENDIX_FIGURES,
     DATA_DERIVED,
-    FIGURES,
     PAPER_FIGURES,
-    TABLES,
     WAGES,
 )
 
 
 PROFIT_MULTIPLIER = {"P": 10, "S": 10, "N": 10, "PAN": 35}
 DISPLAY_ORDER = ["GE", "Prosocial", "Neutral", "Efficiency"]
+BOOTSTRAP_SEED = 2024
 
 
 def _load() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
@@ -48,10 +47,13 @@ def _agent_profit_max_wages(df: pd.DataFrame) -> pd.DataFrame:
         ),
         axis=1,
     )
-    return agents[["Treatment", "real_profitmax_wage"]]
+    agents["Treatment label"] = agents["Treatment"].map(
+        {"P": "GE", "S": "Prosocial", "N": "Neutral", "PAN": "Efficiency"}
+    )
+    return agents[["Treatment label", "real_profitmax_wage"]]
 
 
-def _principal_wage_summary(df: pd.DataFrame) -> pd.DataFrame:
+def _wage_summary(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     principals = df[df["Agent"] == 0].copy().reset_index(drop=True)
     principals["expected_profitmax_wage"] = principals.apply(
         lambda row: _profit_max_wage(
@@ -60,49 +62,28 @@ def _principal_wage_summary(df: pd.DataFrame) -> pd.DataFrame:
         ),
         axis=1,
     )
-
-    agent_profitmax = _agent_profit_max_wages(df)
-    pieces = []
-    for treatment in PROFIT_MULTIPLIER:
-        principal_group = principals[principals["Treatment"] == treatment].copy().reset_index(drop=True)
-        agent_group = agent_profitmax[agent_profitmax["Treatment"] == treatment].reset_index(drop=True)
-        if len(principal_group) != len(agent_group):
-            raise ValueError(
-                f"Cannot align principal and agent profit-maximizing wages for {treatment}: "
-                f"{len(principal_group)} principals and {len(agent_group)} agents."
-        )
-        principal_group["real_profitmax_wage"] = agent_group["real_profitmax_wage"]
-        pieces.append(principal_group)
-    merged = pd.concat(pieces, ignore_index=True)
-    merged["Treatment label"] = merged["Treatment"].map(
+    principals["Treatment label"] = principals["Treatment"].map(
         {"P": "GE", "S": "Prosocial", "N": "Neutral", "PAN": "Efficiency"}
     )
-
-    merged[
-        [
-            "Treatment label",
-            "PAWage",
-            "OptimalWage",
-            "expected_profitmax_wage",
-            "real_profitmax_wage",
-        ]
-    ].to_csv(TABLES / "wage_summary_by_principal.csv", index=False)
 
     rows = []
     for source_col, wage_type in [
         ("PAWage", "Offered"),
         ("OptimalWage", "Guessed Profit Maximizing"),
         ("expected_profitmax_wage", "Expected Profit Maximizing"),
-        ("real_profitmax_wage", "Real Profit Maximizing"),
     ]:
         rows.append(
-            merged[["Treatment label", source_col]]
+            principals[["Treatment label", source_col]]
             .rename(columns={"Treatment label": "Treatment", source_col: "Wage"})
             .assign(**{"Wage type": wage_type})
         )
+    rows.append(
+        _agent_profit_max_wages(df)
+        .rename(columns={"Treatment label": "Treatment", "real_profitmax_wage": "Wage"})
+        .assign(**{"Wage type": "Real Profit Maximizing"})
+    )
     summary = pd.concat(rows, ignore_index=True)
-    summary.to_csv(TABLES / "wage_summary.csv", index=False)
-    return summary
+    return summary, principals
 
 
 def _plot_wage_comparison(data: pd.DataFrame, order: list[str]) -> None:
@@ -113,6 +94,7 @@ def _plot_wage_comparison(data: pd.DataFrame, order: list[str]) -> None:
         hue="Wage type",
         estimator=np.mean,
         errorbar=("ci", 95),
+        seed=BOOTSTRAP_SEED,
         capsize=0.05,
         err_kws={"linewidth": 1},
         linewidth=1,
@@ -135,18 +117,24 @@ def _savefig(folder: Path, path: str) -> None:
 
 
 def build() -> dict[str, str]:
-    FIGURES.mkdir(parents=True, exist_ok=True)
     PAPER_FIGURES.mkdir(parents=True, exist_ok=True)
     APPENDIX_FIGURES.mkdir(parents=True, exist_ok=True)
-    TABLES.mkdir(parents=True, exist_ok=True)
     sns.set_theme(style="ticks", context="paper", font_scale=1.25)
 
     df, agent_long, principal_long = _load()
-    wage_summary = _principal_wage_summary(df)
+    wage_summary, wage_summary_by_principal = _wage_summary(df)
 
     main = agent_long[agent_long["Treatment"].isin(["P", "S"])].copy()
     main["Treatment"] = main["treatment_label"]
-    sns.lineplot(data=main, x="Wage", y="Effort", hue="Treatment", marker="o", errorbar=("ci", 95))
+    sns.lineplot(
+        data=main,
+        x="Wage",
+        y="Effort",
+        hue="Treatment",
+        marker="o",
+        errorbar=("ci", 95),
+        seed=BOOTSTRAP_SEED,
+    )
     plt.ylabel("Mean chosen effort")
     _savefig(PAPER_FIGURES, "main_fig_2_chosen_effort.png")
 
@@ -173,6 +161,7 @@ def build() -> dict[str, str]:
         kind="line",
         marker="o",
         errorbar=("ci", 95),
+        seed=BOOTSTRAP_SEED,
         height=4,
         aspect=1.25,
     )
@@ -190,6 +179,7 @@ def build() -> dict[str, str]:
         hue="Treatment",
         marker="o",
         errorbar=("ci", 95),
+        seed=BOOTSTRAP_SEED,
     )
     plt.ylabel("Acceptance share")
     _savefig(APPENDIX_FIGURES, "supp_fig_a1_acceptance_wage.png")
@@ -205,6 +195,7 @@ def build() -> dict[str, str]:
         hue="Treatment",
         marker="o",
         errorbar=("ci", 95),
+        seed=BOOTSTRAP_SEED,
     )
     plt.ylabel("Mean chosen effort")
     _savefig(APPENDIX_FIGURES, "supp_fig_a2_chosen_effort_all.png")
@@ -212,7 +203,7 @@ def build() -> dict[str, str]:
     _plot_wage_comparison(wage_summary, DISPLAY_ORDER)
     _savefig(APPENDIX_FIGURES, "supp_fig_a3_wage_comparisons_all.png")
 
-    fig_a4 = wage_summary.copy()
+    fig_a4 = wage_summary_by_principal.copy()
     fig_a4 = fig_a4[fig_a4["Treatment label"].isin(["GE", "Prosocial"])].copy()
     medians_beliefs = fig_a4.groupby("Treatment label")["expected_profitmax_wage"].transform("median")
     fig_a4["Beliefs"] = np.where(fig_a4["expected_profitmax_wage"] <= medians_beliefs, "Low", "High")
@@ -223,6 +214,7 @@ def build() -> dict[str, str]:
         hue="Beliefs",
         estimator=np.mean,
         errorbar=("ci", 95),
+        seed=BOOTSTRAP_SEED,
         capsize=0.05,
         err_kws={"linewidth": 1},
         linewidth=1,
@@ -258,12 +250,10 @@ def build() -> dict[str, str]:
         g.savefig(APPENDIX_FIGURES / filename, dpi=220)
         plt.close("all")
 
-    artifacts = {
+    return {
         path.name: str(path)
         for path in [*sorted(PAPER_FIGURES.glob("*.png")), *sorted(APPENDIX_FIGURES.glob("*.png"))]
     }
-    (FIGURES / "manifest.json").write_text(json.dumps(artifacts, indent=2) + "\n")
-    return artifacts
 
 
 if __name__ == "__main__":

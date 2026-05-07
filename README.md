@@ -17,20 +17,20 @@ Python is managed by `uv`; you do not need to create a Python environment manual
 
 There are two first-class ways to run the analysis.
 
-For a guided walkthrough, open `analysis.ipynb`. The notebook starts from the raw treatment CSV files, derives the analysis data step by step, runs the Stata regressions through `pystata`, and displays the paper and appendix tables and figures inline.
+**Guided notebook workflow.** Open `analysis.ipynb` if you want to follow the analysis step by step. The notebook starts from the raw treatment CSV files, derives the analysis data, runs the Stata regressions through `pystata`, and displays the paper and appendix tables and figures inline.
 
-For a fully automated workflow, run this command from the repository root:
+**Automated script workflow.** Run this command from the repository root if you want to regenerate all outputs without stepping through the notebook:
 
 ```bash
 uv run python run_analysis.py
 ```
 
-The generated outputs are written to:
+Both workflows write the final outputs to:
 
 - `results/paper/`: main paper Tables 2-4 and Figures 2-4.
 - `results/appendix/`: online appendix Tables A.1-A.9 and Figures A.1-A.8.
 
-Tables are generated as `.tex` fragments and readable `.csv` files. Figures are generated as `.png` files.
+Tables are generated as `.tex` fragments and readable `.csv` files. Figures are generated as `.png` files. Intermediate datasets are rebuilt in `data/derived/` and are not versioned.
 
 ## Stata Setup
 
@@ -57,7 +57,7 @@ uv run python run_analysis.py --check-setup
 
 ## Notebook Workflow
 
-To execute the notebook locally:
+To run the notebook locally:
 
 ```bash
 uv run jupyter notebook analysis.ipynb
@@ -69,7 +69,7 @@ The notebook is self-contained: it does not call `run_analysis.py` or import the
 
 - `analysis.ipynb`: self-contained researcher-facing walkthrough of the paper and appendix analysis.
 - `data/raw/`: treatment-level CSV inputs.
-- `data/derived/`: intermediate datasets generated from the raw inputs.
+- `data/derived/`: generated intermediate datasets rebuilt from the raw inputs.
 - `src/data/`: data assembly code.
 - `src/analysis/`: figure, table, and formatting code.
 - `results/`: generated paper and appendix outputs.
