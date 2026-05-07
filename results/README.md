@@ -6,6 +6,5 @@ This folder contains generated analysis outputs.
 - `paper/figures/`: main paper Figures 2-4 as `.png`.
 - `appendix/tables/`: online appendix Tables A.1-A.9 as `.tex` and `.csv`.
 - `appendix/figures/`: online appendix Figures A.1-A.8 as `.png`.
-- `diagnostics/`: setup reports, diagnostic checks, long-form table files, and Stata logs.
 
 Run `uv run python run_analysis.py` from the repository root to regenerate these files.

@@ -4,7 +4,7 @@ import json
 
 from src.analysis.format_tables import build as format_tables
 from src.analysis.tables_appendix import build as build_appendix_tables
-from src.replication_paths import LOGS, TABLES
+from src.paths import LOGS, TABLES
 from src.stata import StataConfigurationError, StataExecutionError, run_do_file
 
 

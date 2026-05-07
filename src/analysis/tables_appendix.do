@@ -2,13 +2,13 @@ version 19
 set more off
 
 capture mkdir results
-capture mkdir results/diagnostics
-capture mkdir results/diagnostics/tables
-capture mkdir results/diagnostics/logs
-log using results/diagnostics/logs/stata_appendix_tables.log, replace text
+capture mkdir results/_intermediate
+capture mkdir results/_intermediate/tables
+capture mkdir results/_intermediate/logs
+log using results/_intermediate/logs/stata_appendix_tables.log, replace text
 
 tempname results
-postfile `results' str12 table_id str24 model str64 term double coefficient std_error fit_stat observations using results/diagnostics/tables/appendix_tables_results.dta, replace
+postfile `results' str12 table_id str24 model str64 term double coefficient std_error fit_stat observations using results/_intermediate/tables/appendix_tables_results.dta, replace
 
 import delimited data/derived/agent_wage_long.csv, clear varnames(1)
 xtset n
@@ -308,7 +308,7 @@ post `results' ("Table A.9") ("4") ("Constant") (_b[_cons]) (_se[_cons]) (e(r2))
 
 postclose `results'
 
-use results/diagnostics/tables/appendix_tables_results.dta, clear
-export delimited using results/diagnostics/tables/appendix_tables_results.csv, replace
+use results/_intermediate/tables/appendix_tables_results.dta, clear
+export delimited using results/_intermediate/tables/appendix_tables_results.csv, replace
 
 log close

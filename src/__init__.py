@@ -1,2 +1,1 @@
-"""Replication package helpers for Efficiency Wages with Motivated Agents."""
-
+"""Analysis helpers for Efficiency Wages with Motivated Agents."""

@@ -1,16 +1,23 @@
 from __future__ import annotations
 
 import importlib.metadata
-import json
 import platform
 import sys
 from datetime import datetime, timezone
 
-from src.replication_paths import OUTPUTS
 from src.stata import resolve_stata
 
 
-PYTHON_PACKAGES = ["numpy", "pandas", "matplotlib", "seaborn"]
+PYTHON_PACKAGES = [
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "seaborn",
+    "jupyter",
+    "ipykernel",
+    "pystata",
+    "stata-setup",
+]
 
 
 def collect_setup() -> dict[str, object]:
@@ -36,6 +43,4 @@ def collect_setup() -> dict[str, object]:
         "packages": packages,
         "stata": resolve_stata().to_dict(),
     }
-    OUTPUTS.mkdir(parents=True, exist_ok=True)
-    (OUTPUTS / "setup_report.json").write_text(json.dumps(info, indent=2) + "\n")
     return info

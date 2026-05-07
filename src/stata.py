@@ -8,7 +8,7 @@ import subprocess
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-from src.replication_paths import LOGS, ROOT
+from src.paths import LOGS, ROOT
 
 
 MIN_STATA_VERSION = 17.0
@@ -216,7 +216,11 @@ def require_stata() -> StataInfo:
 
 def run_do_file(do_file: str, stdout_name: str) -> StataInfo:
     info = require_stata()
-    assert info.executable is not None
+    if info.executable is None:
+        raise StataConfigurationError(
+            "Stata executable not found. "
+            "Set STATA_PATH to the full Stata executable path and rerun the command."
+        )
     LOGS.mkdir(parents=True, exist_ok=True)
     executable = Path(info.executable)
     completed = subprocess.run(
@@ -233,4 +237,51 @@ def run_do_file(do_file: str, stdout_name: str) -> StataInfo:
             f"Stata table generation failed with exit code {completed.returncode}. "
             f"See {LOGS / stdout_name}."
         )
+    return info
+
+
+def _edition_from_executable(executable: Path) -> str:
+    name = executable.name.lower()
+    if "mp" in name:
+        return "mp"
+    if "be" in name:
+        return "be"
+    return "se"
+
+
+def _pystata_install_dir(executable: Path) -> Path:
+    parts = list(executable.parts)
+    for marker in ["StataSE.app", "StataMP.app", "StataBE.app"]:
+        if marker in parts:
+            return Path(*parts[: parts.index(marker)])
+    return executable.parent
+
+
+def pystata_config() -> tuple[Path, str, StataInfo]:
+    """Return the install directory and edition needed by stata_setup.config."""
+    info = require_stata()
+    if info.executable is None:
+        raise StataConfigurationError(
+            "Stata executable not found. "
+            "Set STATA_PATH to the full Stata executable path and rerun the command."
+        )
+    executable = Path(info.executable)
+    return _pystata_install_dir(executable), _edition_from_executable(executable), info
+
+
+def configure_pystata() -> StataInfo:
+    """Configure pystata from the same OS-agnostic Stata resolver used by scripts."""
+    install_dir, edition, info = pystata_config()
+    try:
+        import stata_setup
+    except ImportError as error:
+        raise StataConfigurationError(
+            "pystata notebook support requires the stata-setup Python package. "
+            "Install project dependencies with `uv sync` or run through `uv run`."
+        ) from error
+
+    try:
+        stata_setup.config(str(install_dir), edition, splash=False)
+    except TypeError:
+        stata_setup.config(str(install_dir), edition)
     return info

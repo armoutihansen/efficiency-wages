@@ -7,7 +7,7 @@ from statistics import NormalDist
 
 import pandas as pd
 
-from src.replication_paths import APPENDIX_TABLES, PAPER_TABLES, TABLES
+from src.paths import APPENDIX_TABLES, PAPER_TABLES, TABLES
 
 
 TABLE_NAMES = {

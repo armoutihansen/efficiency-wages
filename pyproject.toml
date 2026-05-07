@@ -1,12 +1,16 @@
 [project]
 name = "efficiency-wages"
 version = "0.1.0"
-description = "Replication package for Efficiency Wages with Motivated Agents"
+description = "Analysis package for Efficiency Wages with Motivated Agents"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "ipykernel>=6.25",
+    "jupyter>=1.0",
     "matplotlib>=3.7",
     "numpy>=1.24",
     "pandas>=2.0",
+    "pystata>=0.0.1",
     "seaborn>=0.12",
+    "stata-setup>=0.1.3",
 ]
