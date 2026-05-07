@@ -2,7 +2,11 @@
 
 ## Entry Points
 
-The researcher-facing walkthrough is `analysis.ipynb`.
+The notebook entrypoint is:
+
+```bash
+uv run jupyter notebook analysis.ipynb
+```
 
 The scripted entrypoint is:
 
@@ -10,7 +14,13 @@ The scripted entrypoint is:
 uv run python run_analysis.py
 ```
 
-`replicate.py` and `main.py` are compatibility wrappers around `run_analysis.py`.
+Both workflows start from the raw CSV inputs and write final artifacts to `results/paper` and `results/appendix`. `replicate.py` and `main.py` are compatibility wrappers around `run_analysis.py`.
+
+## Notebook Workflow
+
+`analysis.ipynb` is a self-contained walkthrough for researchers who prefer to inspect and run the analysis step by step. It derives the analysis datasets directly in notebook cells, generates the Python figures directly in notebook cells, and runs the Stata regression commands through inline `pystata` cells.
+
+The notebook intentionally does not call `run_analysis.py`, import `src.data.assemble`, import `src.analysis.*`, or call external Stata do-files.
 
 ## Script Pipeline
 
@@ -47,7 +57,7 @@ Stata is resolved in this order:
 2. Stata executables on `PATH`.
 3. Common Stata installation paths on macOS, Windows, and Linux.
 
-Stata 17 or newer is required. The script pipeline runs Stata do-files through the Stata executable. The notebook configures `pystata` from the same resolver and then runs the same Stata do-files from Python.
+Stata 17 or newer is required. The script pipeline runs Stata do-files through the Stata executable. The notebook configures `pystata` directly and runs inline Stata commands from Python.
 
 ## Outputs
 

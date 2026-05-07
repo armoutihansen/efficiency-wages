@@ -15,9 +15,11 @@ Python is managed by `uv`; you do not need to create a Python environment manual
 
 ## Run The Analysis
 
-For a readable walkthrough, open `analysis.ipynb`. The notebook starts from the raw treatment CSV files, assembles the analysis data, runs the paper and appendix table code, and displays the figures and tables in the order they appear in the paper and online appendix.
+There are two first-class ways to run the analysis.
 
-To run the complete scripted analysis from the repository root:
+For a guided walkthrough, open `analysis.ipynb`. The notebook starts from the raw treatment CSV files, derives the analysis data step by step, runs the Stata regressions through `pystata`, and displays the paper and appendix tables and figures inline.
+
+For a fully automated workflow, run this command from the repository root:
 
 ```bash
 uv run python run_analysis.py
@@ -53,7 +55,7 @@ To check Python packages and Stata availability without running the analysis:
 uv run python run_analysis.py --check-setup
 ```
 
-## Notebook
+## Notebook Workflow
 
 To execute the notebook locally:
 
@@ -61,11 +63,11 @@ To execute the notebook locally:
 uv run jupyter notebook analysis.ipynb
 ```
 
-The notebook uses `pystata` for the Stata sections. It uses the same Stata resolver as the script workflow, so `STATA_PATH` can be used when Stata is not found automatically.
+The notebook is self-contained: it does not call `run_analysis.py` or import the analysis functions used by the script workflow. The Stata regression commands are shown inline and run through `pystata`. `STATA_PATH` can be used when Stata is not found automatically.
 
 ## Repository Layout
 
-- `analysis.ipynb`: researcher-facing walkthrough of the paper and appendix analysis.
+- `analysis.ipynb`: self-contained researcher-facing walkthrough of the paper and appendix analysis.
 - `data/raw/`: treatment-level CSV inputs.
 - `data/derived/`: intermediate datasets generated from the raw inputs.
 - `src/data/`: data assembly code.

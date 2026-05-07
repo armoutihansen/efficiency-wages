@@ -1,4 +1,4 @@
-version 19
+version 17
 set more off
 
 capture mkdir results
