@@ -14,7 +14,7 @@ The scripted entrypoint is:
 uv run python run_analysis.py
 ```
 
-Both workflows start from the raw CSV inputs and write final artifacts to `results/paper` and `results/appendix`. `replicate.py` and `main.py` are compatibility wrappers around `run_analysis.py`.
+Both workflows start from the raw CSV inputs and write final artifacts to `results/paper` and `results/appendix`.
 
 ## Notebook Workflow
 
