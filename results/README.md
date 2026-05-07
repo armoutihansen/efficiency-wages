@@ -7,4 +7,4 @@ This folder contains generated analysis outputs.
 - `appendix/tables/`: online appendix Tables A.1-A.9 as `.tex` and `.csv`.
 - `appendix/figures/`: online appendix Figures A.1-A.8 as `.png`.
 
-Run `uv run python run_analysis.py` from the repository root to regenerate these files.
+Regenerate these files by running `analysis.ipynb` or `uv run python run_analysis.py` from the repository root.
