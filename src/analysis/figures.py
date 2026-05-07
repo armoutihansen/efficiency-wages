@@ -39,11 +39,6 @@ def _profit_max_wage(efforts: list[float], treatment: str) -> int:
     return WAGES[int(np.nanargmax(profits))]
 
 
-def _belief_profit_max_wage(row: pd.Series) -> int:
-    efforts = [row[f"wage_{wage}"] for wage in WAGES]
-    return _profit_max_wage(efforts, row["Treatment"])
-
-
 def _agent_profit_max_wages(df: pd.DataFrame) -> pd.DataFrame:
     agents = df[df["Agent"] == 1].copy().reset_index(drop=True)
     agents["real_profitmax_wage"] = agents.apply(
@@ -56,34 +51,26 @@ def _agent_profit_max_wages(df: pd.DataFrame) -> pd.DataFrame:
     return agents[["Treatment", "real_profitmax_wage"]]
 
 
-def _principal_wage_summary(df: pd.DataFrame, principal_long: pd.DataFrame) -> pd.DataFrame:
+def _principal_wage_summary(df: pd.DataFrame) -> pd.DataFrame:
     principals = df[df["Agent"] == 0].copy().reset_index(drop=True)
-    principals["principal_n"] = np.arange(len(principals))
-
-    expected = principal_long.pivot_table(
-        index=["principal_n", "Treatment"], columns="Wage", values="ExpectedEffort"
-    ).reset_index()
-    expected.columns = [
-        f"wage_{int(col)}" if isinstance(col, (int, float)) else col for col in expected.columns
-    ]
-    expected["expected_profitmax_wage"] = expected.apply(_belief_profit_max_wage, axis=1)
-
-    merged = principals.merge(
-        expected[["principal_n", "expected_profitmax_wage"]],
-        on="principal_n",
-        how="left",
+    principals["expected_profitmax_wage"] = principals.apply(
+        lambda row: _profit_max_wage(
+            [row[f"PA_ExpectedEffort_Principal_atWage_{wage}"] for wage in WAGES],
+            row["Treatment"],
+        ),
+        axis=1,
     )
 
     agent_profitmax = _agent_profit_max_wages(df)
     pieces = []
     for treatment in PROFIT_MULTIPLIER:
-        principal_group = merged[merged["Treatment"] == treatment].copy().reset_index(drop=True)
+        principal_group = principals[principals["Treatment"] == treatment].copy().reset_index(drop=True)
         agent_group = agent_profitmax[agent_profitmax["Treatment"] == treatment].reset_index(drop=True)
         if len(principal_group) != len(agent_group):
             raise ValueError(
                 f"Cannot align principal and agent profit-maximizing wages for {treatment}: "
                 f"{len(principal_group)} principals and {len(agent_group)} agents."
-            )
+        )
         principal_group["real_profitmax_wage"] = agent_group["real_profitmax_wage"]
         pieces.append(principal_group)
     merged = pd.concat(pieces, ignore_index=True)
@@ -155,7 +142,7 @@ def build() -> dict[str, str]:
     sns.set_theme(style="ticks", context="paper", font_scale=1.25)
 
     df, agent_long, principal_long = _load()
-    wage_summary = _principal_wage_summary(df, principal_long)
+    wage_summary = _principal_wage_summary(df)
 
     main = agent_long[agent_long["Treatment"].isin(["P", "S"])].copy()
     main["Treatment"] = main["treatment_label"]
