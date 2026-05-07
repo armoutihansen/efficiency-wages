@@ -212,7 +212,7 @@ def build() -> dict[str, str]:
     _plot_wage_comparison(wage_summary, DISPLAY_ORDER)
     _savefig(APPENDIX_FIGURES, "supp_fig_a3_wage_comparisons_all.png")
 
-    fig_a4 = pd.read_csv(TABLES / "wage_summary_by_principal.csv")
+    fig_a4 = wage_summary.copy()
     fig_a4 = fig_a4[fig_a4["Treatment label"].isin(["GE", "Prosocial"])].copy()
     medians_beliefs = fig_a4.groupby("Treatment label")["expected_profitmax_wage"].transform("median")
     fig_a4["Beliefs"] = np.where(fig_a4["expected_profitmax_wage"] <= medians_beliefs, "Low", "High")
