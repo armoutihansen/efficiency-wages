@@ -32,16 +32,11 @@ def _load() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
 
 def _profit_max_wage(efforts: list[float], treatment: str) -> int:
     multiplier = PROFIT_MULTIPLIER[treatment]
-    profits = [multiplier * effort - wage for effort, wage in zip(efforts, WAGES)]
+    profits = [
+        100 if pd.isna(effort) else multiplier * effort - wage + 100
+        for effort, wage in zip(efforts, WAGES)
+    ]
     return WAGES[int(np.nanargmax(profits))]
-
-
-def _mean_real_profit_max_wages(agent_long: pd.DataFrame) -> dict[str, int]:
-    results: dict[str, int] = {}
-    for treatment, group in agent_long.groupby("Treatment"):
-        means = [group.loc[group["Wage"] == wage, "Effort"].mean() for wage in WAGES]
-        results[treatment] = _profit_max_wage(means, treatment)
-    return results
 
 
 def _belief_profit_max_wage(row: pd.Series) -> int:
@@ -49,12 +44,21 @@ def _belief_profit_max_wage(row: pd.Series) -> int:
     return _profit_max_wage(efforts, row["Treatment"])
 
 
-def _principal_wage_summary(
-    df: pd.DataFrame, principal_long: pd.DataFrame, agent_long: pd.DataFrame
-) -> pd.DataFrame:
+def _agent_profit_max_wages(df: pd.DataFrame) -> pd.DataFrame:
+    agents = df[df["Agent"] == 1].copy().reset_index(drop=True)
+    agents["real_profitmax_wage"] = agents.apply(
+        lambda row: _profit_max_wage(
+            [row[f"PA_OfferedEffort_Agent_atWage_{wage}"] for wage in WAGES],
+            row["Treatment"],
+        ),
+        axis=1,
+    )
+    return agents[["Treatment", "real_profitmax_wage"]]
+
+
+def _principal_wage_summary(df: pd.DataFrame, principal_long: pd.DataFrame) -> pd.DataFrame:
     principals = df[df["Agent"] == 0].copy().reset_index(drop=True)
     principals["principal_n"] = np.arange(len(principals))
-    real_pmw = _mean_real_profit_max_wages(agent_long)
 
     expected = principal_long.pivot_table(
         index=["principal_n", "Treatment"], columns="Wage", values="ExpectedEffort"
@@ -69,41 +73,72 @@ def _principal_wage_summary(
         on="principal_n",
         how="left",
     )
+
+    agent_profitmax = _agent_profit_max_wages(df)
+    pieces = []
+    for treatment in PROFIT_MULTIPLIER:
+        principal_group = merged[merged["Treatment"] == treatment].copy().reset_index(drop=True)
+        agent_group = agent_profitmax[agent_profitmax["Treatment"] == treatment].reset_index(drop=True)
+        if len(principal_group) != len(agent_group):
+            raise ValueError(
+                f"Cannot align principal and agent profit-maximizing wages for {treatment}: "
+                f"{len(principal_group)} principals and {len(agent_group)} agents."
+            )
+        principal_group["real_profitmax_wage"] = agent_group["real_profitmax_wage"]
+        pieces.append(principal_group)
+    merged = pd.concat(pieces, ignore_index=True)
+    merged["Treatment label"] = merged["Treatment"].map(
+        {"P": "GE", "S": "Prosocial", "N": "Neutral", "PAN": "Efficiency"}
+    )
+
+    merged[
+        [
+            "Treatment label",
+            "PAWage",
+            "OptimalWage",
+            "expected_profitmax_wage",
+            "real_profitmax_wage",
+        ]
+    ].to_csv(TABLES / "wage_summary_by_principal.csv", index=False)
+
     rows = []
-    for treatment, label in [
-        ("P", "GE"),
-        ("S", "Prosocial"),
-        ("N", "Neutral"),
-        ("PAN", "Efficiency"),
+    for source_col, wage_type in [
+        ("PAWage", "Offered"),
+        ("OptimalWage", "Guessed Profit Maximizing"),
+        ("expected_profitmax_wage", "Expected Profit Maximizing"),
+        ("real_profitmax_wage", "Real Profit Maximizing"),
     ]:
-        group = merged[merged["Treatment"] == treatment]
-        rows.extend(
-            [
-                {
-                    "Treatment": label,
-                    "Wage type": "Offered",
-                    "Wage": group["PA_Offer_Principal"].mean(),
-                },
-                {
-                    "Treatment": label,
-                    "Wage type": "Expected profit-maximizing",
-                    "Wage": group["expected_profitmax_wage"].mean(),
-                },
-                {
-                    "Treatment": label,
-                    "Wage type": "Guessed profit-maximizing",
-                    "Wage": group["OptimalWage"].mean(),
-                },
-                {
-                    "Treatment": label,
-                    "Wage type": "Average real profit-maximizing",
-                    "Wage": real_pmw[treatment],
-                },
-            ]
+        rows.append(
+            merged[["Treatment label", source_col]]
+            .rename(columns={"Treatment label": "Treatment", source_col: "Wage"})
+            .assign(**{"Wage type": wage_type})
         )
-    summary = pd.DataFrame(rows)
+    summary = pd.concat(rows, ignore_index=True)
     summary.to_csv(TABLES / "wage_summary.csv", index=False)
     return summary
+
+
+def _plot_wage_comparison(data: pd.DataFrame, order: list[str]) -> None:
+    sns.barplot(
+        data=data,
+        x="Treatment",
+        y="Wage",
+        hue="Wage type",
+        estimator=np.mean,
+        errorbar=("ci", 95),
+        capsize=0.05,
+        err_kws={"linewidth": 1},
+        linewidth=1,
+        edgecolor="black",
+        order=order,
+        hue_order=[
+            "Offered",
+            "Expected Profit Maximizing",
+            "Guessed Profit Maximizing",
+            "Real Profit Maximizing",
+        ],
+    )
+    plt.ylabel("Wage")
 
 
 def _savefig(folder: Path, path: str) -> None:
@@ -120,7 +155,7 @@ def build() -> dict[str, str]:
     sns.set_theme(style="ticks", context="paper", font_scale=1.25)
 
     df, agent_long, principal_long = _load()
-    wage_summary = _principal_wage_summary(df, principal_long, agent_long)
+    wage_summary = _principal_wage_summary(df, principal_long)
 
     main = agent_long[agent_long["Treatment"].isin(["P", "S"])].copy()
     main["Treatment"] = main["treatment_label"]
@@ -129,15 +164,7 @@ def build() -> dict[str, str]:
     _savefig(PAPER_FIGURES, "main_fig_2_chosen_effort.png")
 
     main_wages = wage_summary[wage_summary["Treatment"].isin(["GE", "Prosocial"])]
-    sns.barplot(
-        data=main_wages,
-        x="Treatment",
-        y="Wage",
-        hue="Wage type",
-        errorbar=None,
-        edgecolor="black",
-    )
-    plt.ylabel("Wage")
+    _plot_wage_comparison(main_wages, ["GE", "Prosocial"])
     plt.xticks(rotation=0)
     _savefig(PAPER_FIGURES, "main_fig_3_wage_comparisons.png")
 
@@ -195,37 +222,28 @@ def build() -> dict[str, str]:
     plt.ylabel("Mean chosen effort")
     _savefig(APPENDIX_FIGURES, "supp_fig_a2_chosen_effort_all.png")
 
-    sns.barplot(
-        data=wage_summary,
-        x="Treatment",
-        y="Wage",
-        hue="Wage type",
-        order=DISPLAY_ORDER,
-        errorbar=None,
-        edgecolor="black",
-    )
-    plt.ylabel("Wage")
-    plt.xticks(rotation=15)
+    _plot_wage_comparison(wage_summary, DISPLAY_ORDER)
     _savefig(APPENDIX_FIGURES, "supp_fig_a3_wage_comparisons_all.png")
 
-    median_expected = wage_summary[
-        (wage_summary["Treatment"].isin(["GE", "Prosocial"]))
-        & (wage_summary["Wage type"] == "Expected profit-maximizing")
-    ].copy()
-    offered = wage_summary[
-        (wage_summary["Treatment"].isin(["GE", "Prosocial"]))
-        & (wage_summary["Wage type"] == "Offered")
-    ].copy()
-    median_expected["Wage type"] = "Beliefs-based profit-maximizing"
-    fig_a4 = pd.concat([offered, median_expected], ignore_index=True)
+    fig_a4 = pd.read_csv(TABLES / "wage_summary_by_principal.csv")
+    fig_a4 = fig_a4[fig_a4["Treatment label"].isin(["GE", "Prosocial"])].copy()
+    medians_beliefs = fig_a4.groupby("Treatment label")["expected_profitmax_wage"].transform("median")
+    fig_a4["Beliefs"] = np.where(fig_a4["expected_profitmax_wage"] <= medians_beliefs, "Low", "High")
     sns.barplot(
         data=fig_a4,
-        x="Treatment",
-        y="Wage",
-        hue="Wage type",
-        errorbar=None,
+        x="Treatment label",
+        y="PAWage",
+        hue="Beliefs",
+        estimator=np.mean,
+        errorbar=("ci", 95),
+        capsize=0.05,
+        err_kws={"linewidth": 1},
+        linewidth=1,
         edgecolor="black",
+        order=["GE", "Prosocial"],
+        hue_order=["Low", "High"],
     )
+    plt.xlabel("Treatment")
     plt.ylabel("Wage")
     _savefig(APPENDIX_FIGURES, "supp_fig_a4_beliefs_based_profitmax_wage.png")
 
