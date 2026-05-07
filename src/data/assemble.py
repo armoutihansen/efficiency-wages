@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from pandas.errors import PerformanceWarning
 
-from src.replication_paths import DATA_DERIVED, RAW_COMBINED, TREATMENT_LABELS, WAGES
+from src.paths import DATA_DERIVED, RAW_COMBINED, TREATMENT_LABELS, WAGES
 
 
 ULTIMATUM_ACCEPT_PREFIX = "Ultimatum_Accept_Agent_atShare_Principal_"

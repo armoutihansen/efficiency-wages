@@ -1,4 +1,4 @@
-.PHONY: all setup data figures tables correspondence verify report clean-derived
+.PHONY: all setup data figures tables clean-derived
 
 all:
 	uv run python run_analysis.py
@@ -15,14 +15,5 @@ figures: data
 tables: data
 	uv run python -m src.analysis.run_stata_tables
 
-correspondence:
-	uv run python -m src.verification.correspondence
-
-verify:
-	uv run python -m src.verification.checks
-
-report:
-	uv run python run_analysis.py --skip-stata
-
 clean-derived:
-	rm -f data/derived/*.csv data/derived/*.json results/paper/tables/* results/paper/figures/* results/appendix/tables/* results/appendix/figures/* results/diagnostics/*.json results/diagnostics/*.md results/diagnostics/*.html results/diagnostics/tables/* results/diagnostics/figures/* results/diagnostics/logs/*
+	rm -f data/derived/*.csv data/derived/*.json results/paper/tables/* results/paper/figures/* results/appendix/tables/* results/appendix/figures/* results/_intermediate/tables/* results/_intermediate/figures/* results/_intermediate/logs/*

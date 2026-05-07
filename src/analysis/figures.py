@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from src.replication_paths import (
+from src.paths import (
     APPENDIX_FIGURES,
     DATA_DERIVED,
     FIGURES,

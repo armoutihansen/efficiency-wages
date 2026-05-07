@@ -1,6 +1,6 @@
 # Data
 
-The replication pipeline uses these treatment-level input files:
+The analysis uses these treatment-level input files:
 
 - `raw/ge_prosocial/combined.csv`: GE and prosocial treatments from the original joint export.
 - `raw/neutral/combined.csv`: neutral treatment.

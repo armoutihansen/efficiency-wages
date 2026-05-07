@@ -4,7 +4,7 @@ import json
 
 import pandas as pd
 
-from src.replication_paths import DATA_DERIVED, TABLES
+from src.paths import DATA_DERIVED, TABLES
 
 
 TREATMENT_ORDER = ["P", "S", "N", "PAN"]

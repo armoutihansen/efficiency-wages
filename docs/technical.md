@@ -1,23 +1,33 @@
 # Technical Notes
 
-## Pipeline
+## Entry Points
 
-The primary entrypoint is:
+The researcher-facing walkthrough is `analysis.ipynb`.
+
+The scripted entrypoint is:
 
 ```bash
 uv run python run_analysis.py
 ```
 
-It runs these steps:
-
-1. Collect setup information for Python, dependencies, OS, and Stata.
-2. Assemble raw treatment CSV files into derived analysis datasets.
-3. Regenerate paper and appendix figures.
-4. Regenerate Stata regression table data.
-5. Format table outputs as readable CSV files and LaTeX table fragments.
-6. Write secondary diagnostics.
-
 `replicate.py` and `main.py` are compatibility wrappers around `run_analysis.py`.
+
+## Script Pipeline
+
+`run_analysis.py` runs these steps:
+
+1. Assemble raw treatment CSV files into derived analysis datasets.
+2. Regenerate paper and appendix figures.
+3. Regenerate Stata regression table data.
+4. Format table outputs as readable CSV files and LaTeX table fragments.
+
+The setup-only command is:
+
+```bash
+uv run python run_analysis.py --check-setup
+```
+
+It reports Python, package, OS, and Stata availability without rebuilding outputs.
 
 ## Data Inputs
 
@@ -37,12 +47,10 @@ Stata is resolved in this order:
 2. Stata executables on `PATH`.
 3. Common Stata installation paths on macOS, Windows, and Linux.
 
-Stata 17 or newer is required. The current local validation was performed with Stata 19 on macOS.
+Stata 17 or newer is required. The script pipeline runs Stata do-files through the Stata executable. The notebook configures `pystata` from the same resolver and then runs the same Stata do-files from Python.
 
 ## Outputs
 
-The main user-facing outputs are in `results/paper` and `results/appendix`.
+The main outputs are in `results/paper` and `results/appendix`.
 
-Long-form machine-readable table files, Stata logs, setup information, and diagnostic checks are in `results/diagnostics`.
-
-The diagnostics checks cover sample sizes, headline values, generated artifact existence, and Stata availability. They are intended as a confidence check and troubleshooting aid, not as the main purpose of the repository.
+Internal machine-readable files and Stata logs are written to `results/_intermediate/` while the analysis runs. That folder is ignored by git because the researcher-facing table and figure files are already written to `results/paper` and `results/appendix`.
