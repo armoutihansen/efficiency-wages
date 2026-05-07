@@ -12,6 +12,7 @@ from src.paths import (
     APPENDIX_FIGURES,
     DATA_DERIVED,
     PAPER_FIGURES,
+    TREATMENT_LABELS,
     WAGES,
 )
 
@@ -47,9 +48,7 @@ def _agent_profit_max_wages(df: pd.DataFrame) -> pd.DataFrame:
         ),
         axis=1,
     )
-    agents["Treatment label"] = agents["Treatment"].map(
-        {"P": "GE", "S": "Prosocial", "N": "Neutral", "PAN": "Efficiency"}
-    )
+    agents["Treatment label"] = agents["Treatment"].map(TREATMENT_LABELS)
     return agents[["Treatment label", "real_profitmax_wage"]]
 
 
@@ -62,9 +61,7 @@ def _wage_summary(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
         ),
         axis=1,
     )
-    principals["Treatment label"] = principals["Treatment"].map(
-        {"P": "GE", "S": "Prosocial", "N": "Neutral", "PAN": "Efficiency"}
-    )
+    principals["Treatment label"] = principals["Treatment"].map(TREATMENT_LABELS)
 
     rows = []
     for source_col, wage_type in [
