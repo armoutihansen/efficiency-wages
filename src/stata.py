@@ -216,7 +216,11 @@ def require_stata() -> StataInfo:
 
 def run_do_file(do_file: str, stdout_name: str) -> StataInfo:
     info = require_stata()
-    assert info.executable is not None
+    if info.executable is None:
+        raise StataConfigurationError(
+            "Stata executable not found. "
+            "Set STATA_PATH to the full Stata executable path and rerun the command."
+        )
     LOGS.mkdir(parents=True, exist_ok=True)
     executable = Path(info.executable)
     completed = subprocess.run(
@@ -256,7 +260,11 @@ def _pystata_install_dir(executable: Path) -> Path:
 def pystata_config() -> tuple[Path, str, StataInfo]:
     """Return the install directory and edition needed by stata_setup.config."""
     info = require_stata()
-    assert info.executable is not None
+    if info.executable is None:
+        raise StataConfigurationError(
+            "Stata executable not found. "
+            "Set STATA_PATH to the full Stata executable path and rerun the command."
+        )
     executable = Path(info.executable)
     return _pystata_install_dir(executable), _edition_from_executable(executable), info
 
